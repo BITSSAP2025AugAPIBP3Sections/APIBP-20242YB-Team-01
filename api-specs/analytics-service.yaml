@@ -1,0 +1,130 @@
+openapi: 3.0.3
+info:
+  title: Ebaazee Analytics Service API
+  version: 1.0.0
+  description: |
+    The Analytics Service provides insights and reports from auctions and bids in Ebaazee.
+    It helps track trends, top bidders, and popular items for better decision-making.
+
+servers:
+  - url: http://localhost:8085
+    description: Local development server
+
+tags:
+  - name: Analytics
+    description: Operations related to analytics and reports
+
+paths:
+  /analytics/top-bidders:
+    get:
+      tags:
+        - Analytics
+      summary: Get top bidders
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: Number of top bidders to return (default 10)
+      responses:
+        '200':
+          description: List of top bidders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Bidder'
+
+  /analytics/popular-auctions:
+    get:
+      tags:
+        - Analytics
+      summary: Get most popular auctions
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: Number of auctions to return (default 10)
+      responses:
+        '200':
+          description: List of popular auctions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AuctionSummary'
+
+  /analytics/auction-stats/{auctionId}:
+    get:
+      tags:
+        - Analytics
+      summary: Get stats for a specific auction
+      parameters:
+        - name: auctionId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Auction statistics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuctionStats'
+        '404':
+          description: Auction not found
+
+components:
+  schemas:
+    Bidder:
+      type: object
+      properties:
+        userId:
+          type: string
+        name:
+          type: string
+        totalBids:
+          type: integer
+        totalAmount:
+          type: number
+
+    AuctionSummary:
+      type: object
+      properties:
+        auctionId:
+          type: string
+        title:
+          type: string
+        totalBids:
+          type: integer
+        highestBid:
+          type: number
+
+    AuctionStats:
+      type: object
+      properties:
+        auctionId:
+          type: string
+        title:
+          type: string
+        totalBids:
+          type: integer
+        highestBid:
+          type: number
+        lowestBid:
+          type: number
+        averageBid:
+          type: number
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+
