@@ -1,0 +1,13 @@
+# Node.js
+node_modules/
+dist/
+.env
+
+# Java / Spring Boot
+target/
+*.class
+*.jar
+*.war
+
+# Logs
+*.log
