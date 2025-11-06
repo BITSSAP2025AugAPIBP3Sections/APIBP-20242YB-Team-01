@@ -1,0 +1,240 @@
+openapi: 3.0.3
+info:
+  title: Ebaazee Auction Service API
+  version: 1.0.0
+  description: |
+    The Auction Service manages auctions and bids in Ebaazee.
+    It handles creation, listing, retrieval of auctions, placing bids, and real-time updates.
+
+servers:
+  - url: http://localhost:8081
+    description: Local REST server
+  - url: ws://localhost:8081/notifications
+    description: Local WebSocket server
+
+tags:
+  - name: Auctions
+    description: Operations related to auctions
+  - name: Bids
+    description: Operations related to bids
+
+paths:
+  /auctions:
+    get:
+      tags:
+        - Auctions
+      summary: Get all active auctions
+      responses:
+        '200':
+          description: List of active auctions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Auction'
+
+    post:
+      tags:
+        - Auctions
+      summary: Create a new auction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewAuction'
+      responses:
+        '201':
+          description: Auction created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Auction'
+
+  /auctions/{auctionId}:
+    get:
+      tags:
+        - Auctions
+      summary: Get auction details by ID
+      parameters:
+        - name: auctionId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Auction details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Auction'
+        '404':
+          description: Auction not found
+
+  /bids:
+    post:
+      tags:
+        - Bids
+      summary: Place a new bid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewBid'
+      responses:
+        '201':
+          description: Bid placed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BidResponse'
+        '400':
+          description: Invalid bid amount or auction closed
+
+    get:
+      tags:
+        - Bids
+      summary: Get all bids
+      responses:
+        '200':
+          description: List of all bids
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BidResponse'
+
+  /bids/{bidId}:
+    get:
+      tags:
+        - Bids
+      summary: Get bid details by ID
+      parameters:
+        - name: bidId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Details of the requested bid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BidResponse'
+        '404':
+          description: Bid not found
+
+components:
+  schemas:
+    Auction:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        basePrice:
+          type: number
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum: [upcoming, live, closed]
+
+    NewAuction:
+      type: object
+      required:
+        - title
+        - basePrice
+        - duration
+      properties:
+        title:
+          type: string
+          description: Auction title
+        description:
+          type: string
+          description: Short description of the auction
+        basePrice:
+          type: number
+          description: Starting bid amount
+        startTime:
+          type: string
+          format: date-time
+          description: Optional scheduled start time (if not provided, starts immediately)
+        duration:
+          type: integer
+          description: Auction duration in minutes
+
+    NewBid:
+      type: object
+      required:
+        - auctionId
+        - userId
+        - amount
+      properties:
+        auctionId:
+          type: string
+          description: Auction to place bid for
+        userId:
+          type: string
+          description: ID of the user placing the bid
+        amount:
+          type: number
+          format: float
+          description: Bid amount
+
+    BidResponse:
+      type: object
+      properties:
+        bidId:
+          type: string
+        auctionId:
+          type: string
+        userId:
+          type: string
+        amount:
+          type: number
+        timestamp:
+          type: string
+          format: date-time
+
+    NewBidEvent:
+      type: object
+      properties:
+        auctionId:
+          type: string
+        bidId:
+          type: string
+        userId:
+          type: string
+        amount:
+          type: number
+        timestamp:
+          type: string
+          format: date-time
+
+    AuctionStatusEvent:
+      type: object
+      properties:
+        auctionId:
+          type: string
+        status:
+          type: string
+          enum: [upcoming, live, closed]
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time

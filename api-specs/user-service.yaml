@@ -1,0 +1,137 @@
+openapi: 3.0.3
+info:
+  title: Ebaazee User Service API
+  version: 1.0.0
+  description: |
+    The User Service manages all user-related operations for Ebaazee.
+    Handles registration, authentication (JWT), profile management, and role-based access.
+
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+
+tags:
+  - name: Users
+    description: Operations related to users
+
+paths:
+  /users/register:
+    post:
+      tags:
+        - Users
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegister'
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          description: Invalid input or user already exists
+
+  /users/login:
+    post:
+      tags:
+        - Users
+      summary: User login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+      responses:
+        '200':
+          description: Login successful, returns JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Invalid credentials
+
+  /users/{userId}:
+    get:
+      tags:
+        - Users
+      summary: Get user profile by ID
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User profile details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '404':
+          description: User not found
+
+components:
+  schemas:
+    UserRegister:
+      type: object
+      required:
+        - name
+        - email
+        - password
+      properties:
+        name:
+          type: string
+          description: Full name of the user
+        email:
+          type: string
+          format: email
+          description: Email address (unique)
+        password:
+          type: string
+          format: password
+          description: Password for login
+
+    UserLogin:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+
+    UserResponse:
+      type: object
+      properties:
+        userId:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+          enum: [buyer, seller, admin]
+
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: JWT token for authentication
+        expiresIn:
+          type: integer
+          description: Token expiry time in seconds
+
