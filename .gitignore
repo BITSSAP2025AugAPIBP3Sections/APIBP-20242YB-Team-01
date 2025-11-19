@@ -11,3 +11,33 @@ target/
 
 # Logs
 *.log
+
+# Node.js
+node_modules/
+dist/
+.env
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# TypeScript
+*.tsbuildinfo
+
+# Docker
+*.pid
+
+# Misc
+coverage/
+
+# Generated files
+fake-payment-gateway/*.log

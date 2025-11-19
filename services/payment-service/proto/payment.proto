@@ -1,0 +1,30 @@
+syntax = "proto3";
+package paymentpb;
+
+service PaymentService {
+  rpc ReserveDeposit (ReserveRequest) returns (ReserveResponse);
+  rpc FinalizePayment (FinalizeRequest) returns (FinalizeResponse);
+}
+
+message ReserveRequest {
+  string user_id = 1;
+  string auction_id = 2;
+  double amount = 3;
+}
+
+message ReserveResponse {
+  bool ok = 1;
+  string reservation_id = 2;
+  string message = 3;
+}
+
+message FinalizeRequest {
+  string reservation_id = 1;
+  double amount = 2;
+}
+
+message FinalizeResponse {
+  bool ok = 1;
+  string transaction_id = 2;
+  string message = 3;
+}
