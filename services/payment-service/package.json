@@ -1,0 +1,31 @@
+{
+  "name": "payment-service-ts",
+  "version": "0.1.0",
+  "main": "dist/server.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "proto:gen": "echo \"Generate gRPC types as needed with protoc\""
+  },
+  "dependencies": {
+    "@grpc/grpc-js": "^1.8.20",
+    "amqplib": "^0.10.3",
+    "axios": "^1.4.0",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "opossum": "^6.2.3",
+    "pg": "^8.16.3",
+    "protobufjs": "^7.2.3"
+  },
+  "devDependencies": {
+    "@types/amqplib": "^0.10.8",
+    "@types/express": "^4.17.19",
+    "@types/node": "^20.5.1",
+    "@types/opossum": "^8.1.9",
+    "@types/pg": "^8.15.6",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.6.2"
+  }
+}
