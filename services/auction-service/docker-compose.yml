@@ -1,0 +1,20 @@
+services:
+  auction-db:
+    image: postgres:15
+    container_name: auction-db
+    environment:
+      POSTGRES_DB: auction_db
+      POSTGRES_USER: auction_user
+      POSTGRES_PASSWORD: auction_pass
+    ports:
+      - "5434:5432" # map container 5432 to host 5434 to avoid conflict with other services
+    volumes:
+      - auction-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  auction-db-data:
