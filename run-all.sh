@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Builds images and starts all services defined in the top-level docker-compose.yml
+ROOT_DIR="$(cd "$(dirname "$0")" && pwd)"
+echo "Starting all services from ${ROOT_DIR}..."
+
+docker compose up --build -d
+
+echo "Waiting for databases and services to become healthy..."
+
+check_tcp() {
+  host=$1; port=$2; name=$3
+  echo -n "Checking $name at $host:$port ... "
+  for i in {1..30}; do
+    if nc -z $host $port 2>/dev/null; then
+      echo "ok"
+      return 0
+    fi
+    sleep 1
+  done
+  echo "FAILED"
+  return 1
+}
+
+# Wait for Postgres and Rabbit/Redis
+check_tcp localhost 5433 "auth-db"
+check_tcp localhost 5434 "auction-db"
+check_tcp localhost 5435 "wallet-db"
+check_tcp localhost 6379 "redis"
+check_tcp localhost 5672 "rabbitmq"
+
+echo "All infra reachable. Give services a few more seconds to boot..."
+sleep 10
+
+docker compose ps
+
+echo "Done. Use 'docker compose logs -f' to follow logs or 'docker compose down' to stop everything."
