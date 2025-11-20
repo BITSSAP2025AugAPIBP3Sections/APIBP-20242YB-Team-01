@@ -137,6 +137,20 @@ services:
     depends_on:
       - rabbitmq
 
+  envoy:
+    image: envoyproxy/envoy:v1.27-latest
+    volumes:
+      - ./gateway/envoy:/etc/envoy
+    ports:
+      - "8080:8080" # API gateway
+      - "9901:9901" # admin
+    depends_on:
+      - user-service
+      - auction-service
+      - payment-service
+      - notification-service
+      - analytics-service
+
 volumes:
   auth-db-data:
   auction-db-data:
