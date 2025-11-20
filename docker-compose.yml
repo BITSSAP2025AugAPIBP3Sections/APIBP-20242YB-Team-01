@@ -1,0 +1,144 @@
+services:
+  # Shared infra
+  auth-db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: authsvc
+      POSTGRES_USER: auth
+      POSTGRES_PASSWORD: authpw
+    ports:
+      - "5433:5432"
+    volumes:
+      - auth-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  auction-db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: auction_db
+      POSTGRES_USER: auction_user
+      POSTGRES_PASSWORD: auction_pass
+    ports:
+      - "5434:5432"
+    volumes:
+      - auction-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  wallet-db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: wallets
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5435:5432"
+    volumes:
+      - wallet-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  # Services
+  user-service:
+    build:
+      context: ./services/user-service
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://auth-db:5432/authsvc
+      SPRING_DATASOURCE_USERNAME: auth
+      SPRING_DATASOURCE_PASSWORD: authpw
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: "6379"
+    depends_on:
+      - auth-db
+      - redis
+
+  auction-service:
+    build:
+      context: ./services/auction-service
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://auction-db:5432/auction_db
+      SPRING_DATASOURCE_USERNAME: auction_user
+      SPRING_DATASOURCE_PASSWORD: auction_pass
+    depends_on:
+      - auction-db
+
+  analytics-service:
+    build:
+      context: ./services/analytics-service
+      dockerfile: Dockerfile
+    ports:
+      - "8085:8085"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://auction-db:5432/auction_db
+      SPRING_DATASOURCE_USERNAME: auction_user
+      SPRING_DATASOURCE_PASSWORD: auction_pass
+      USER_SERVICE_BASE_URL: http://user-service:8081
+    depends_on:
+      - auction-db
+      - user-service
+
+  payment-service:
+    build:
+      context: ./services/payment-service
+      dockerfile: Dockerfile
+    ports:
+      - "8086:8081"
+    environment:
+      PGHOST: wallet-db
+      PGPORT: "5432"
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      PGDATABASE: wallets
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      PORT: 8081
+    depends_on:
+      - wallet-db
+      - rabbitmq
+
+  notification-service:
+    build:
+      context: ./services/notification-service
+      dockerfile: Dockerfile
+    ports:
+      - "8083:8080"
+    environment:
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      SMTP_HOST: smtp.gmail.com
+      SMTP_PORT: "587"
+    depends_on:
+      - rabbitmq
+
+volumes:
+  auth-db-data:
+  auction-db-data:
+  wallet-db-data:
+  redis-data:
