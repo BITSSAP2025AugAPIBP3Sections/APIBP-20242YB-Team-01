@@ -8,31 +8,35 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-// added
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RestController
-@RequestMapping("/api/products")
+@RequestMapping("/api/products/v1")
 public class ProductController {
 
-    // added
     private static final Logger log = LoggerFactory.getLogger(ProductController.class);
 
     @Autowired
     private ProductService productService;
 
+    /**
+     * GET /api/products/v1
+     */
     @GetMapping
     public List<Product> getAllProducts() {
-        log.debug("GET /api/products called");
+        log.debug("GET /api/products/v1 called");
         List<Product> products = productService.getAllProducts();
         log.info("Fetched {} products", products.size());
         return products;
     }
 
+    /**
+     * GET /api/products/v1/{id}
+     */
     @GetMapping("/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable Integer id) {
-        log.debug("GET /api/products/{} called", id);
+        log.debug("GET /api/products/v1/{} called", id);
         return productService.getProductById(id)
                 .map(p -> {
                     log.info("Product found with id {}", id);
@@ -44,17 +48,23 @@ public class ProductController {
                 });
     }
 
+    /**
+     * POST /api/products/v1
+     */
     @PostMapping
     public Product createProduct(@RequestBody Product product) {
-        log.debug("POST /api/products called with product: {}", product);
+        log.debug("POST /api/products/v1 called with product: {}", product);
         Product saved = productService.createProduct(product);
         log.info("Product created with id {}", saved.getId());
         return saved;
     }
 
+    /**
+     * PUT /api/products/v1/{id}
+     */
     @PutMapping("/{id}")
     public ResponseEntity<Product> updateProduct(@PathVariable Integer id, @RequestBody Product product) {
-        log.debug("PUT /api/products/{} called with data: {}", id, product);
+        log.debug("PUT /api/products/v1/{} called with data: {}", id, product);
         Product updated = productService.updateProduct(id, product);
         if (updated == null) {
             log.warn("Product update failed: id {} not found", id);
@@ -64,9 +74,12 @@ public class ProductController {
         return ResponseEntity.ok(updated);
     }
 
+    /**
+     * DELETE /api/products/v1/{id}
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Integer id) {
-        log.debug("DELETE /api/products/{} called", id);
+        log.debug("DELETE /api/products/v1/{} called", id);
         productService.deleteProduct(id);
         log.info("Product deleted with id {}", id);
         return ResponseEntity.noContent().build();

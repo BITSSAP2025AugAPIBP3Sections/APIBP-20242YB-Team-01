@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RestController
-@RequestMapping("/api/v1/events")
+@RequestMapping("/api/analytics/v1/events")
 public class EventsController {
 
     // added

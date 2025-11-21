@@ -8,30 +8,35 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-// added
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RestController
-@RequestMapping("/api/categories")
+@RequestMapping("/api/categories/v1")
 public class CategoryController {
-    // added
+
     private static final Logger logger = LoggerFactory.getLogger(CategoryController.class);
 
     @Autowired
     private CategoryService categoryService;
 
+    /**
+     * GET /api/categories/v1
+     */
     @GetMapping
     public List<Category> getAllCategories() {
-        logger.debug("GET /api/categories called");
+        logger.debug("GET /api/categories/v1 called");
         List<Category> categories = categoryService.getAllCategories();
         logger.info("Fetched {} categories", categories.size());
         return categories;
     }
 
+    /**
+     * GET /api/categories/v1/{id}
+     */
     @GetMapping("/{id}")
     public ResponseEntity<Category> getCategoryById(@PathVariable Integer id) {
-        logger.debug("GET /api/categories/{} called", id);
+        logger.debug("GET /api/categories/v1/{} called", id);
         return categoryService.getCategoryById(id)
                 .map(c -> {
                     logger.info("Category found with id {}", id);
@@ -43,17 +48,23 @@ public class CategoryController {
                 });
     }
 
+    /**
+     * POST /api/categories/v1
+     */
     @PostMapping
     public Category createCategory(@RequestBody Category category) {
-        logger.debug("POST /api/categories called with category: {}", category);
+        logger.debug("POST /api/categories/v1 called with category: {}", category);
         Category saved = categoryService.createCategory(category);
         logger.info("Category created with id {}", saved.getId());
         return saved;
     }
 
+    /**
+     * PUT /api/categories/v1/{id}
+     */
     @PutMapping("/{id}")
     public ResponseEntity<Category> updateCategory(@PathVariable Integer id, @RequestBody Category category) {
-        logger.debug("PUT /api/categories/{} called with data: {}", id, category);
+        logger.debug("PUT /api/categories/v1/{} called with data: {}", id, category);
         Category updated = categoryService.updateCategory(id, category);
         if (updated == null) {
             logger.warn("Category update failed: id {} not found", id);
@@ -63,9 +74,12 @@ public class CategoryController {
         return ResponseEntity.ok(updated);
     }
 
+    /**
+     * DELETE /api/categories/v1/{id}
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCategory(@PathVariable Integer id) {
-        logger.debug("DELETE /api/categories/{} called", id);
+        logger.debug("DELETE /api/categories/v1/{} called", id);
         categoryService.deleteCategory(id);
         logger.info("Category deleted with id {}", id);
         return ResponseEntity.noContent().build();
