@@ -54,9 +54,14 @@ public class ProductController {
     @PostMapping
     public Product createProduct(@RequestBody Product product) {
         log.debug("POST /api/products/v1 called with product: {}", product);
-        Product saved = productService.createProduct(product);
-        log.info("Product created with id {}", saved.getId());
-        return saved;
+        try {
+            Product saved = productService.createProduct(product);
+            log.info("Product created with id {}", saved.getId());
+            return saved;
+        } catch (IllegalArgumentException e) {
+            log.warn("Invalid product create request: {}", e.getMessage());
+            throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 
     /**
@@ -65,13 +70,18 @@ public class ProductController {
     @PutMapping("/{id}")
     public ResponseEntity<Product> updateProduct(@PathVariable Integer id, @RequestBody Product product) {
         log.debug("PUT /api/products/v1/{} called with data: {}", id, product);
-        Product updated = productService.updateProduct(id, product);
-        if (updated == null) {
-            log.warn("Product update failed: id {} not found", id);
-            return ResponseEntity.notFound().build();
+        try {
+            Product updated = productService.updateProduct(id, product);
+            if (updated == null) {
+                log.warn("Product update failed: id {} not found", id);
+                return ResponseEntity.notFound().build();
+            }
+            log.info("Product updated with id {}", id);
+            return ResponseEntity.ok(updated);
+        } catch (IllegalArgumentException e) {
+            log.warn("Invalid product update request for id {}: {}", id, e.getMessage());
+            throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.BAD_REQUEST, e.getMessage());
         }
-        log.info("Product updated with id {}", id);
-        return ResponseEntity.ok(updated);
     }
 
     /**

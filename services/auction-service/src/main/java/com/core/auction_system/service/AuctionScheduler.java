@@ -8,14 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
-
-// added
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Service
 public class AuctionScheduler {
@@ -28,7 +26,7 @@ public class AuctionScheduler {
     @Autowired
     private BidRepository bidRepository;
 
-    @Scheduled(fixedDelay = 60000)
+    @Scheduled(cron = "0 0 * * * *")
     @Transactional
     public void closeExpiredAuctions() {
         LocalDateTime now = LocalDateTime.now();
