@@ -33,6 +33,12 @@ public class Bid {
     @Column(name = "bidder_id")
     private Integer bidderId;
 
+    // Reservation id returned by payment.freeze to correlate payment events
+    private String reservationId;
+
+    // status: PENDING, PAID, FAILED
+    private String status;
+
     // Lombok will generate constructors, getters, setters
 
     @Override

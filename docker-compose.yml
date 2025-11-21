@@ -98,6 +98,8 @@ services:
       OPENSEARCH_HOST: "http://opensearch-node1:9200"
       OPENSEARCH_USERNAME: admin
       OPENSEARCH_PASSWORD: quartz_EB_@5911
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      PAYMENT_CONSUMER_QUEUE: payment-service-consumer
     depends_on:
       - auction-db
 
@@ -133,6 +135,7 @@ services:
       PGPASSWORD: postgres
       PGDATABASE: wallets
       RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      GATEWAY_BASE_URL: http://envoy:8080
       PORT: 8081
       OPENSEARCH_HOST: "http://opensearch-node1:9200"
       OPENSEARCH_USERNAME: admin
@@ -149,11 +152,14 @@ services:
       - "8083:8080"
     environment:
       RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      QUEUE_BINDINGS: "payment.locked,payment.success,payment.failed"
       SMTP_HOST: smtp.gmail.com
       SMTP_PORT: "587"
       OPENSEARCH_HOST: "http://opensearch-node1:9200"
       OPENSEARCH_USERNAME: admin
       OPENSEARCH_PASSWORD: quartz_EB_@5911
+    env_file:
+      - ./.env
     depends_on:
       - rabbitmq
 

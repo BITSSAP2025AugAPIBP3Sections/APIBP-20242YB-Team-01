@@ -3,6 +3,7 @@ package events
 import (
 	"context"
 	"log"
+	"strings"
 
 	"github.com/rabbitmq/amqp091-go"
 )
@@ -18,7 +19,10 @@ type Consumer struct {
 
 // NewConsumer connects to RabbitMQ at amqpURL and declares the provided queueName.
 // Use RABBITMQ_URL and QUEUE_NAME env vars in main to set these values.
-func NewConsumer(amqpURL, queueName string, handler NotificationHandler) (*Consumer, error) {
+// NewConsumer connects to RabbitMQ at amqpURL, declares the provided queueName,
+// ensures the 'events' exchange exists and binds routing keys provided in queueBindings (comma-separated)
+// Use RABBITMQ_URL and QUEUE_NAME / QUEUE_BINDINGS env vars in main to set these values.
+func NewConsumer(amqpURL, queueName, queueBindings string, handler NotificationHandler) (*Consumer, error) {
 	// Connect to RabbitMQ
 	conn, err := amqp091.Dial(amqpURL)
 	if err != nil {
@@ -33,7 +37,7 @@ func NewConsumer(amqpURL, queueName string, handler NotificationHandler) (*Consu
 		return nil, err
 	}
 
-	// Declare queue (must be same name used by publisher)
+	// Declare queue
 	q, err := ch.QueueDeclare(
 		queueName, // queue name
 		true,      // durable
@@ -47,6 +51,36 @@ func NewConsumer(amqpURL, queueName string, handler NotificationHandler) (*Consu
 		return nil, err
 	}
 	log.Println("📥 Declared queue:", q.Name)
+
+	// Ensure 'events' exchange exists and bind routing keys
+	if err := ch.ExchangeDeclare("events", "topic", true, false, false, false, nil); err != nil {
+		log.Println("❌ Failed to declare exchange 'events':", err)
+		return nil, err
+	}
+	log.Println("🔁 Ensured exchange 'events'")
+
+	if queueBindings != "" {
+		// binding keys are comma-separated
+		var keys = strings.Split(queueBindings, ",")
+		for _, k := range keys {
+			key := strings.TrimSpace(k)
+			if key == "" {
+				continue
+			}
+			if err := ch.QueueBind(q.Name, key, "events", false, nil); err != nil {
+				log.Printf("❌ Failed to bind queue %s to events/%s: %v", q.Name, key, err)
+				return nil, err
+			}
+			log.Printf("🔗 Bound queue %s -> events/%s", q.Name, key)
+		}
+	} else {
+		// If no bindings specified, bind queue to a default routing key equal to queueName (backwards compatible)
+		if err := ch.QueueBind(q.Name, queueName, "events", false, nil); err != nil {
+			log.Printf("❌ Failed to bind queue %s to events/%s: %v", q.Name, queueName, err)
+			return nil, err
+		}
+		log.Printf("🔗 Bound queue %s -> events/%s (default)", q.Name, queueName)
+	}
 
 	return &Consumer{
 		conn:    conn,
