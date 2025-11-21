@@ -21,13 +21,21 @@ import org.springframework.web.servlet.HandlerMapping;
 
 import java.util.Map;
 
+// added
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @RestController
 @RequiredArgsConstructor
 public class GatewayController {
 
+    // added
+    private static final Logger log = LoggerFactory.getLogger(GatewayController.class);
+
     private final GatewayProperties gatewayProperties;
 
     private WebClient webClientFor(String baseUrl) {
+        log.debug("Creating WebClient for {}", baseUrl);
         return WebClient.builder().baseUrl(baseUrl).build();
     }
 
@@ -40,10 +48,15 @@ public class GatewayController {
             @RequestHeader(value = "Content-Type", required = false) String contentType,
             HttpServletRequest request
     ) {
+        log.info("Gateway routing request: {} {}", request.getMethod(), request.getRequestURI());
+
         String targetBase = gatewayProperties.getServices().get(service);
         if (targetBase == null) {
+            log.warn("Unknown service '{}' requested by client -> returning 404", service);
             return ResponseEntity.notFound().build();
         }
+
+        log.debug("Resolved service '{}' to {}", service, targetBase);
 
         // compute remaining path after /api/{service}
         String bestPattern = (String) request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
@@ -62,10 +75,11 @@ public class GatewayController {
         if (!params.isEmpty()) {
             uriBuilder.append('?');
             params.forEach((k, v) -> uriBuilder.append(k).append('=').append(v).append('&'));
-            uriBuilder.setLength(uriBuilder.length() - 1); // remove trailing &
+            uriBuilder.setLength(uriBuilder.length() - 1);
         }
 
         String uri = uriBuilder.toString();
+        log.info("Proxying to upstream URI: {}", uri);
 
         WebClient client = webClientFor(targetBase);
 
@@ -73,6 +87,7 @@ public class GatewayController {
         try {
             httpMethod = HttpMethod.valueOf(request.getMethod());
         } catch (IllegalArgumentException e) {
+            log.warn("Unsupported HTTP method '{}' -> defaulting to GET", request.getMethod());
             httpMethod = HttpMethod.GET;
         }
 
@@ -85,22 +100,26 @@ public class GatewayController {
         });
 
         WebClient.ResponseSpec responseSpec;
-
         if (body != null && body.length > 0) {
+            log.debug("Forwarding request with body ({} bytes)", body.length);
             responseSpec = reqSpec.contentType(contentType != null ? MediaType.parseMediaType(contentType) : MediaType.APPLICATION_OCTET_STREAM)
                     .body(BodyInserters.fromValue(body))
                     .retrieve();
         } else {
+            log.debug("Forwarding request without body");
             responseSpec = reqSpec.retrieve();
         }
 
         try {
             ResponseEntity<byte[]> resp = responseSpec.toEntity(byte[].class).block();
             if (resp == null) {
+                log.error("Upstream {} returned empty response", service);
                 return ResponseEntity.status(502).body(("Upstream returned empty response").getBytes());
             }
+            log.info("Upstream response status {} from {}", resp.getStatusCode(), service);
             return ResponseEntity.status(resp.getStatusCode()).headers(resp.getHeaders()).body(resp.getBody());
         } catch (Exception ex) {
+            log.error("Upstream error for service {}: {}", service, ex.getMessage());
             return ResponseEntity.status(502).body(("Upstream error: " + ex.getMessage()).getBytes());
         }
     }

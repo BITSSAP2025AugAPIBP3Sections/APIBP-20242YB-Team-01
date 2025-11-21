@@ -16,9 +16,16 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+// added
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Component
 @RequiredArgsConstructor
 public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccessHandler {
+
+    // added
+    private static final Logger log = LoggerFactory.getLogger(OAuth2AuthenticationSuccessHandler.class);
 
     private final JwtService jwtService;
     private final AuthService authService;
@@ -26,44 +33,54 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+
         if (!(authentication instanceof OAuth2AuthenticationToken)) {
+            log.warn("Authentication success received but not OAuth2 token: {}", authentication);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
         OAuth2AuthenticationToken token = (OAuth2AuthenticationToken) authentication;
         String email = token.getPrincipal().getAttribute("email");
+
         if (email == null) {
-            // fallback to name
+            log.debug("Email attribute missing from OAuth2 provider, falling back to principal name");
             email = token.getPrincipal().getName();
         }
+
+        log.info("OAuth2 login successful for email: {}", email);
 
         String role = "BUYER";
         try {
             role = authService.getRoleForEmail(email);
+            log.debug("Resolved role '{}' for email {}", role, email);
         } catch (Exception ignored) {
+            log.warn("Failed to resolve role for email {}, using default BUYER", email);
         }
 
-        // Try to include user id in token so downstream services can use it directly
         String accessToken;
         try {
             Long userId = authService.getUserProfile(email).getId();
             accessToken = jwtService.generateAccessToken(email, role, userId);
+            log.info("Generated JWT access token for user '{}', role '{}', userId {}", email, role, userId);
         } catch (Exception ex) {
             accessToken = jwtService.generateAccessToken(email, role);
+            log.warn("Failed to fetch userId for '{}', generated token without userId", email);
         }
 
         String opaque = null;
         try {
             opaque = authService.createOpaqueRefreshTokenForEmail(email);
+            log.debug("Generated opaque refresh token for {}", email);
         } catch (Exception ex) {
-            // ignore - we'll still return access token
+            log.error("Failed to generate refresh token for {}, proceeding with access token only", email, ex);
         }
 
         Map<String, String> body = new HashMap<>();
         body.put("accessToken", accessToken);
         body.put("refreshToken", opaque);
 
+        log.info("Returning OAuth2 login response for {}", email);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write(objectMapper.writeValueAsString(body));
