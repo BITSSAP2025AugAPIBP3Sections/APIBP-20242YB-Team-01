@@ -14,10 +14,17 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+// added
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Configuration
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+
+    // added
+    private static final Logger log = LoggerFactory.getLogger(SecurityConfig.class);
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomUserDetailsService customUserDetailsService;
@@ -26,26 +33,46 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.disable())
-                .authorizeHttpRequests(auth -> auth
-                        // Allow registration and login without auth
-                        .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/login", "/api/auth/refresh-token", "/api/auth/revoke").permitAll()
-                        // Allow oauth2 endpoints
-                        .requestMatchers("/oauth2/**", "/login/**").permitAll()
-                        // All other requests must be authenticated
-                        .anyRequest().authenticated()
-                )
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .oauth2Login(oauth2 -> oauth2
-                        .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
-                        .successHandler(oauth2SuccessHandler)
-                );
 
+        log.info("Initializing application security filter chain");
+
+        http
+                .csrf(csrf -> {
+                    log.debug("Disabling CSRF protection (API is stateless)");
+                    csrf.disable();
+                })
+                .cors(cors -> {
+                    log.debug("Disabling CORS (handled externally)");
+                    cors.disable();
+                })
+                .authorizeHttpRequests(auth -> {
+                    log.debug("Configuring public and protected endpoints");
+
+                    auth
+                            // Allow registration and login without auth
+                            .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/login", "/api/auth/refresh-token", "/api/auth/revoke")
+                            .permitAll()
+
+                            // Allow oauth2 endpoints
+                            .requestMatchers("/oauth2/**", "/login/**")
+                            .permitAll()
+
+                            // All other requests must be authenticated
+                            .anyRequest().authenticated();
+                })
+                .sessionManagement(session -> {
+                    log.debug("Setting session management to STATELESS");
+                    session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                })
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .oauth2Login(oauth2 -> {
+                    log.info("Configuring OAuth2 login support");
+                    oauth2
+                            .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
+                            .successHandler(oauth2SuccessHandler);
+                });
+
+        log.info("Security filter chain built successfully");
         return http.build();
     }
 
@@ -53,6 +80,7 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        log.debug("Initializing AuthenticationManager");
         return authenticationConfiguration.getAuthenticationManager();
     }
 }

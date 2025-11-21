@@ -33,7 +33,10 @@ public class AuthService {
      * User registration
      */
     public void register(RegisterRequest request) {
+        log.debug("Registration attempt for email={}", request.getEmail());
+
         if (userRepository.existsByEmail(request.getEmail())) {
+            log.warn("Registration failed: user already exists with email={}", request.getEmail());
             throw new CustomException("User already exists with email: " + request.getEmail(), HttpStatus.CONFLICT);
         }
 
@@ -57,6 +60,7 @@ public class AuthService {
         try {
             return UserRole.valueOf(roleStr.toUpperCase());
         } catch (IllegalArgumentException ex) {
+            log.warn("Invalid role signup request: {}", roleStr);
             throw new CustomException("Invalid role: " + roleStr + ". Allowed: ADMIN, BUYER, SELLER", HttpStatus.BAD_REQUEST);
         }
     }
@@ -65,10 +69,16 @@ public class AuthService {
      * User login
      */
     public LoginResponse login(LoginRequest request) {
+        log.debug("Login attempt for email={}", request.getEmail());
+
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new CustomException("Invalid credentials", HttpStatus.UNAUTHORIZED));
+                .orElseThrow(() -> {
+                    log.warn("Login failed for email={} (no such user)", request.getEmail());
+                    return new CustomException("Invalid credentials", HttpStatus.UNAUTHORIZED);
+                });
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            log.warn("Login failed for email={} (incorrect password)", request.getEmail());
             throw new CustomException("Invalid credentials", HttpStatus.UNAUTHORIZED);
         }
 
@@ -81,16 +91,23 @@ public class AuthService {
         try {
             long refreshMs = jwtConfig.getRefreshTokenExpirationMs();
             opaqueRefresh = refreshTokenService.createAndPersistRandomToken(user, java.time.Instant.now().plusMillis(refreshMs));
+            log.debug("Refresh token created for user={} (length={})", user.getEmail(), opaqueRefresh != null ? opaqueRefresh.length() : 0);
         } catch (Exception ex) {
             log.warn("Failed to create persistent refresh token for user {}: {}", user.getEmail(), ex.getMessage());
         }
 
+        log.info("Login successful for email={}", user.getEmail());
         return new LoginResponse(accessToken, opaqueRefresh);
     }
 
     public UserProfileDTO getUserProfile(String email) {
+        log.debug("Fetching profile for email={}", email);
+
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> {
+                    log.warn("Profile requested for non-existing email={}", email);
+                    return new RuntimeException("User not found");
+                });
 
         return mapToProfileDTO(user);
     }
@@ -99,8 +116,13 @@ public class AuthService {
      * Get user profile by ID
      */
     public UserProfileDTO getUserProfileById(Long userId) {
+        log.debug("Fetching profile for userId={}", userId);
+
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> {
+                    log.warn("Profile requested for non-existing userId={}", userId);
+                    return new RuntimeException("User not found");
+                });
 
         return mapToProfileDTO(user);
     }
@@ -120,10 +142,10 @@ public class AuthService {
      * Refresh JWT token
      */
     public LoginResponse refreshToken(String refreshToken) {
-        try {
-            // Verify stored opaque refresh token and get associated user
-            com.service.auth_svc.entity.RefreshToken stored = refreshTokenService.verifyRefreshToken(refreshToken);
+        log.debug("Refresh token attempt: {}", refreshToken != null ? "[provided]" : "[missing]");
 
+        try {
+            com.service.auth_svc.entity.RefreshToken stored = refreshTokenService.verifyRefreshToken(refreshToken);
             User user = stored.getUser();
 
             String newAccessToken = jwtService.generateAccessToken(user.getEmail(), user.getRole().name());
@@ -133,6 +155,7 @@ public class AuthService {
             long refreshMs = jwtConfig.getRefreshTokenExpirationMs();
             String newOpaque = refreshTokenService.createAndPersistRandomToken(user, java.time.Instant.now().plusMillis(refreshMs));
 
+            log.info("Refresh token rotated for user={}", user.getEmail());
             return new LoginResponse(newAccessToken, newOpaque);
         } catch (Exception ex) {
             log.warn("Invalid refresh token presented: {}", ex.getMessage());
@@ -145,28 +168,36 @@ public class AuthService {
      */
     @Transactional
     public void revokeAllTokensForUser(String email) {
+        log.warn("Revoking ALL refresh tokens for user={}", email);
+
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));
+
         refreshTokenService.revokeAllForUser(user);
     }
 
     public void revokeRefreshToken(String refreshToken) {
+        log.debug("Revoking single refresh token");
         refreshTokenService.revokeByToken(refreshToken);
     }
 
     public String createOpaqueRefreshTokenForEmail(String email) {
+        log.debug("Creating opaque refresh token for email={}", email);
+
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));
+
         long refreshMs = jwtConfig.getRefreshTokenExpirationMs();
         return refreshTokenService.createAndPersistRandomToken(user, Instant.now().plusMillis(refreshMs));
     }
 
     // Helper for other components
     public String getRoleForEmail(String email) {
+        log.debug("Fetching role for email={}", email);
+
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));
+
         return user.getRole().name();
     }
-
-
 }
