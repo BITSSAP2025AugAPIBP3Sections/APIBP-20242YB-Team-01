@@ -111,6 +111,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://auction-db:5432/auction_db
       SPRING_DATASOURCE_USERNAME: auction_user
       SPRING_DATASOURCE_PASSWORD: auction_pass
+      JWT_SECRET: MySuperSecretKey123
       USER_SERVICE_BASE_URL: http://user-service:8081
       OPENSEARCH_HOST: "http://opensearch-node1:9200"
       OPENSEARCH_USERNAME: admin
@@ -155,6 +156,20 @@ services:
       OPENSEARCH_PASSWORD: quartz_EB_@5911
     depends_on:
       - rabbitmq
+
+  envoy:
+    image: envoyproxy/envoy:v1.27-latest
+    volumes:
+      - ./gateway/envoy:/etc/envoy
+    ports:
+      - "8080:8080" # API gateway
+      - "9901:9901" # admin
+    depends_on:
+      - user-service
+      - auction-service
+      - payment-service
+      - notification-service
+      - analytics-service
 
   # -----------------------
   # OpenSearch cluster
