@@ -32,6 +32,9 @@ func main() {
 		from = cfg.From
 	}
 
+	// Log the resolved sender (safe to print email address, not the password)
+	log.Printf("🔐 Notifier sender=%s", from)
+
 	if from == "" || cfg.Password == "" {
 		log.Fatal("❌ SMTP_USERNAME / SMTP_FROM and SMTP_PASSWORD must be set")
 	}
@@ -83,7 +86,8 @@ func main() {
 		queueName = "notifications"
 	}
 
-	consumer, err := events.NewConsumer(amqpURL, queueName, handler)
+	queueBindings := os.Getenv("QUEUE_BINDINGS") // comma-separated routing keys
+	consumer, err := events.NewConsumer(amqpURL, queueName, queueBindings, handler)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -15,6 +15,19 @@ export interface WalletState {
   locked: number;
 }
 
+/**
+ * Ensure the wallets table exists in the database. Safe to call multiple times.
+ */
+export async function initDb() {
+  const sql = `CREATE TABLE IF NOT EXISTS public.wallets (
+    user_id VARCHAR PRIMARY KEY,
+    balance NUMERIC NOT NULL DEFAULT 0,
+    locked NUMERIC NOT NULL DEFAULT 0
+  )`;
+  await pool.query(sql);
+  console.log("✅ Ensured wallets table exists");
+}
+
 
 /**
  * Ensure wallet exists in DB
@@ -23,7 +36,10 @@ export async function ensureWallet(userId: string): Promise<WalletState> {
   const res = await pool.query("SELECT * FROM public.wallets WHERE user_id = $1", [userId]);
   if (res.rows.length > 0) {
     const w = res.rows[0];
-    return { userId: w.user_id, balance: w.balance, locked: w.locked };
+    // Postgres NUMERIC is returned as string by node-postgres — coerce to number
+    const balance = typeof w.balance === "string" ? Number(w.balance) : w.balance;
+    const locked = typeof w.locked === "string" ? Number(w.locked) : w.locked;
+    return { userId: w.user_id, balance: Number.isFinite(balance) ? balance : 0, locked: Number.isFinite(locked) ? locked : 0 };
   }
   // Create wallet if not exists
   await pool.query("INSERT INTO public.wallets (user_id, balance, locked) VALUES ($1, $2, $3)", [userId, 0, 0]);
@@ -42,7 +58,8 @@ export async function getBalance(userId: string) {
  */
 export async function addFunds(userId: string, amount: number) {
   const w = await ensureWallet(userId);
-  const newBalance = w.balance + amount;
+  const amt = typeof amount === "string" ? Number(amount) : amount;
+  const newBalance = w.balance + (typeof amt === "number" && Number.isFinite(amt) ? amt : 0);
   await pool.query("UPDATE public.wallets SET balance = $1 WHERE user_id = $2", [newBalance, userId]);
   return { ok: true, balance: newBalance };
 }
@@ -51,15 +68,18 @@ export async function addFunds(userId: string, amount: number) {
 /**
  * Freeze amount for a bid
  */
-export async function freezeAmount(userId: string, amount: number): Promise<{ ok: boolean; reason?: string }> {
+export async function freezeAmount(userId: string, amount: number): Promise<{ ok: boolean; reservationId?: string; reason?: string }> {
   const w = await ensureWallet(userId);
+  const amt = typeof amount === "string" ? Number(amount) : amount;
   const available = w.balance - w.locked;
-  if (available < amount) {
+  if (available < (typeof amt === "number" && Number.isFinite(amt) ? amt : 0)) {
     return { ok: false, reason: "insufficient_funds" };
   }
-  const newLocked = w.locked + amount;
+  const newLocked = w.locked + (typeof amt === "number" && Number.isFinite(amt) ? amt : 0);
   await pool.query("UPDATE public.wallets SET locked = $1 WHERE user_id = $2", [newLocked, userId]);
-  return { ok: true };
+  // generate a reservation id to correlate events
+  const reservationId = `${userId}-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
+  return { ok: true, reservationId };
 }
 
 
@@ -68,7 +88,8 @@ export async function freezeAmount(userId: string, amount: number): Promise<{ ok
  */
 export async function unfreezeAmount(userId: string, amount: number) {
   const w = await ensureWallet(userId);
-  const newLocked = Math.max(0, w.locked - amount);
+  const amt = typeof amount === "string" ? Number(amount) : amount;
+  const newLocked = Math.max(0, w.locked - (typeof amt === "number" && Number.isFinite(amt) ? amt : 0));
   await pool.query("UPDATE public.wallets SET locked = $1 WHERE user_id = $2", [newLocked, userId]);
   return { ok: true };
 }
@@ -79,9 +100,10 @@ export async function unfreezeAmount(userId: string, amount: number) {
  */
 export async function deductLocked(userId: string, amount: number): Promise<{ ok: boolean; reason?: string; balance?: number }> {
   const w = await ensureWallet(userId);
-  if (w.locked < amount) return { ok: false, reason: "locked_amount_insufficient" };
-  let newLocked = w.locked - amount;
-  let newBalance = w.balance - amount;
+  const amt = typeof amount === "string" ? Number(amount) : amount;
+  if (w.locked < (typeof amt === "number" && Number.isFinite(amt) ? amt : 0)) return { ok: false, reason: "locked_amount_insufficient" };
+  let newLocked = w.locked - (typeof amt === "number" && Number.isFinite(amt) ? amt : 0);
+  let newBalance = w.balance - (typeof amt === "number" && Number.isFinite(amt) ? amt : 0);
   if (newBalance < 0) newBalance = 0; // safety
   await pool.query("UPDATE public.wallets SET locked = $1, balance = $2 WHERE user_id = $3", [newLocked, newBalance, userId]);
   return { ok: true, balance: newBalance };

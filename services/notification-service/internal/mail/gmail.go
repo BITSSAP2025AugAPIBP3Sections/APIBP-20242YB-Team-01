@@ -67,16 +67,19 @@ func (c *GmailClient) SendPlain(to, subject, body string) error {
         log.Printf("SMTP: dial error: %v", err)
         return err
     }
+    log.Printf("SMTP: dial succeeded to host=%s port=%d username=%s", c.Dialer.Host, c.Dialer.Port, c.Dialer.Username)
     defer func() {
         if err := s.Close(); err != nil {
             log.Printf("SMTP: failed to close sender: %v", err)
         }
     }()
-
+    // Log send attempt
+    log.Printf("SMTP: attempting to send message to=%s subject=%s", to, subject)
     if err := gomail.Send(s, m); err != nil {
         log.Printf("SMTP: send error: %v", err)
         return err
     }
+    log.Printf("SMTP: send OK to=%s", to)
 
     return nil
 }
@@ -95,16 +98,20 @@ func (c *GmailClient) SendHTML(to, subject, html string) error {
         log.Printf("SMTP: dial error: %v", err)
         return err
     }
+    log.Printf("SMTP: dial succeeded to host=%s port=%d username=%s", c.Dialer.Host, c.Dialer.Port, c.Dialer.Username)
     defer func() {
         if err := s.Close(); err != nil {
             log.Printf("SMTP: failed to close sender: %v", err)
         }
     }()
 
+    // Log send attempt
+    log.Printf("SMTP: attempting to send HTML message to=%s subject=%s", to, subject)
     if err := gomail.Send(s, m); err != nil {
         log.Printf("SMTP: send error: %v", err)
         return err
     }
+    log.Printf("SMTP: send OK to=%s", to)
 
     return nil
 }
