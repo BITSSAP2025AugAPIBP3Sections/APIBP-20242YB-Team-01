@@ -1,8 +1,6 @@
 <div align="center">
 
-# Ebaazee - Microservices-Based Auction Platform
-
-### REST APIs for Real-Time Auction Management
+# Ebaazee - Microservices-Based Online Auction System with REST-Based APIs
 
 
 </div>
