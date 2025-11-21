@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.time.LocalDateTime;
+// Duration no longer needed
 
 @Service
 public class ProductService {
@@ -22,6 +24,9 @@ public class ProductService {
     }
 
     public Product createProduct(Product product) {
+        if (product.getEndTime() != null && !isValidEndTime(product.getEndTime())) {
+            throw new IllegalArgumentException("endTime must be on the hour and in the future");
+        }
         return productRepository.save(product);
     }
 
@@ -33,10 +38,23 @@ public class ProductService {
                     product.setCategory(updatedProduct.getCategory());
                     product.setMinBid(updatedProduct.getMinBid());
                     product.setMaxBid(updatedProduct.getMaxBid());
+                    if (updatedProduct.getEndTime() != null && !isValidEndTime(updatedProduct.getEndTime())) {
+                        throw new IllegalArgumentException("endTime must be on the hour and in the future");
+                    }
                     product.setEndTime(updatedProduct.getEndTime());
                     return productRepository.save(product);
                 })
                 .orElse(null);
+    }
+
+    // endTime must be exactly on the hour (minute, second, nano == 0)
+    // and must be in the future but no more than 24 hours from now
+    private boolean isValidEndTime(LocalDateTime endTime) {
+        if (endTime.getMinute() != 0 || endTime.getSecond() != 0 || endTime.getNano() != 0) return false;
+        LocalDateTime now = LocalDateTime.now();
+        if (!endTime.isAfter(now)) return false;
+        // endTime must be in the future (strictly after now)
+        return endTime.isAfter(now);
     }
 
     public void deleteProduct(Integer id) {
