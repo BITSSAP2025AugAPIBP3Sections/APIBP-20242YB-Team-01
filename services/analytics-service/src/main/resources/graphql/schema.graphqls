@@ -1,0 +1,8 @@
+type ReportResponse {
+  filename: String
+  base64Content: String
+}
+
+type Query {
+  downloadProductReport: ReportResponse
+}

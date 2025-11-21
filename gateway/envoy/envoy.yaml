@@ -58,6 +58,11 @@ static_resources:
                           route:
                             cluster: notification-service
                         - match:
+                            prefix: "/api/analytics/graphql"
+                          route:
+                            cluster: analytics-service
+                            prefix_rewrite: "/graphql"
+                        - match:
                             prefix: "/api/analytics"
                           route:
                             cluster: analytics-service
