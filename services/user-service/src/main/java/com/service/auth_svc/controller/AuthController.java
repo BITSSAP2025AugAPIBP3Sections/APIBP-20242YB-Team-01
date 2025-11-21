@@ -3,6 +3,7 @@ package com.service.auth_svc.controller;
 import com.service.auth_svc.dto.*;
 import com.service.auth_svc.service.AuthService;
 import jakarta.validation.Valid;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,11 +29,13 @@ public class AuthController {
      * User Registration
      */
     @PostMapping("/register")
-    public ResponseEntity<String> register(@Valid @RequestBody RegisterRequest request) {
+    public ResponseEntity<Map<String, String>> register(@Valid @RequestBody RegisterRequest request) {
         log.info("Attempting registration for email={}", request.getEmail());
         authService.register(request);
         log.info("User registered successfully for email={}", request.getEmail());
-        return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
+        return ResponseEntity.status(HttpStatus.CREATED)
+        .body(Map.of("message", "User registered successfully"));
+
     }
 
     /**
