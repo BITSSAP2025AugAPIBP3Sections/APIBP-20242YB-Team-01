@@ -18,7 +18,13 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.List;
 
+// added
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
+    private static final Logger log = LoggerFactory.getLogger(JwtAuthorizationFilter.class);
+
     private final SecretKey secretKey;
 
     public JwtAuthorizationFilter(String rawSecret) {
@@ -27,7 +33,9 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             MessageDigest sha = MessageDigest.getInstance("SHA-256");
             byte[] hashed = sha.digest(keyBytes);
             this.secretKey = Keys.hmacShaKeyFor(hashed);
+            log.info("JWT Authorization Filter initialized with secure key");
         } catch (Exception ex) {
+            log.error("Failed to initialize JWT key", ex);
             throw new IllegalStateException("Failed to initialize JWT key", ex);
         }
     }
@@ -36,8 +44,10 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         String header = request.getHeader("Authorization");
+
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.replace("Bearer ", "");
+            log.debug("JWT detected on request to {}", request.getRequestURI());
             try {
                 Claims claims = Jwts.parserBuilder()
                         .setSigningKey(secretKey)
@@ -55,6 +65,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                         try {
                             userId = Integer.parseInt(userIdObj.toString());
                         } catch (Exception ignored) {
+                            log.warn("Unable to parse userId from JWT claim: {}", userIdObj);
                         }
                     }
                 }
@@ -62,15 +73,20 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 if (username != null) {
                     String grantedRole = roleClaim == null ? "BUYER" : roleClaim;
                     String authority = grantedRole.startsWith("ROLE_") ? grantedRole : "ROLE_" + grantedRole;
-                    // Principal will be the username; put userId into details for downstream controllers to access
+
                     UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                             username, null, List.of(new SimpleGrantedAuthority(authority)));
-                    auth.setDetails(userId); // store numeric user id in details
+                    auth.setDetails(userId);
                     SecurityContextHolder.getContext().setAuthentication(auth);
+
+                    log.info("Authenticated user '{}' with role '{}' and userId={}", username, authority, userId);
                 }
             } catch (Exception e) {
+                log.warn("JWT validation failed for request {}. Clearing context.", request.getRequestURI());
                 SecurityContextHolder.clearContext();
             }
+        } else {
+            log.debug("No JWT token found for request {}", request.getRequestURI());
         }
         filterChain.doFilter(request, response);
     }

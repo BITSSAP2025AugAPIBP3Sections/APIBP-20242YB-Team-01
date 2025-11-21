@@ -23,36 +23,51 @@ public class CategoryController {
 
     @GetMapping
     public List<Category> getAllCategories() {
-        logger.info("Inside getAllCategories()");
-        return categoryService.getAllCategories();
+        logger.debug("GET /api/categories called");
+        List<Category> categories = categoryService.getAllCategories();
+        logger.info("Fetched {} categories", categories.size());
+        return categories;
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Category> getCategoryById(@PathVariable Integer id) {
-        logger.info("Inside getCategoryById() with id: {}", id);
+        logger.debug("GET /api/categories/{} called", id);
         return categoryService.getCategoryById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .map(c -> {
+                    logger.info("Category found with id {}", id);
+                    return ResponseEntity.ok(c);
+                })
+                .orElseGet(() -> {
+                    logger.warn("Category not found for id {}", id);
+                    return ResponseEntity.notFound().build();
+                });
     }
 
     @PostMapping
     public Category createCategory(@RequestBody Category category) {
-        logger.info("Inside createCategory()");
-        return categoryService.createCategory(category);
+        logger.debug("POST /api/categories called with category: {}", category);
+        Category saved = categoryService.createCategory(category);
+        logger.info("Category created with id {}", saved.getId());
+        return saved;
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Category> updateCategory(@PathVariable Integer id, @RequestBody Category category) {
-        logger.info("Inside updateCategory() with id: {}", id);
+        logger.debug("PUT /api/categories/{} called with data: {}", id, category);
         Category updated = categoryService.updateCategory(id, category);
-        if (updated == null) return ResponseEntity.notFound().build();
+        if (updated == null) {
+            logger.warn("Category update failed: id {} not found", id);
+            return ResponseEntity.notFound().build();
+        }
+        logger.info("Category updated with id {}", id);
         return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCategory(@PathVariable Integer id) {
-        logger.info("Inside deleteCategory() with id: {}", id);
+        logger.debug("DELETE /api/categories/{} called", id);
         categoryService.deleteCategory(id);
+        logger.info("Category deleted with id {}", id);
         return ResponseEntity.noContent().build();
     }
 }

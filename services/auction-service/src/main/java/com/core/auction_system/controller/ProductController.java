@@ -8,39 +8,67 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+// added
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @RestController
 @RequestMapping("/api/products")
 public class ProductController {
+
+    // added
+    private static final Logger log = LoggerFactory.getLogger(ProductController.class);
+
     @Autowired
     private ProductService productService;
 
     @GetMapping
     public List<Product> getAllProducts() {
-        return productService.getAllProducts();
+        log.debug("GET /api/products called");
+        List<Product> products = productService.getAllProducts();
+        log.info("Fetched {} products", products.size());
+        return products;
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable Integer id) {
+        log.debug("GET /api/products/{} called", id);
         return productService.getProductById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .map(p -> {
+                    log.info("Product found with id {}", id);
+                    return ResponseEntity.ok(p);
+                })
+                .orElseGet(() -> {
+                    log.warn("Product not found for id {}", id);
+                    return ResponseEntity.notFound().build();
+                });
     }
 
     @PostMapping
     public Product createProduct(@RequestBody Product product) {
-        return productService.createProduct(product);
+        log.debug("POST /api/products called with product: {}", product);
+        Product saved = productService.createProduct(product);
+        log.info("Product created with id {}", saved.getId());
+        return saved;
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Product> updateProduct(@PathVariable Integer id, @RequestBody Product product) {
+        log.debug("PUT /api/products/{} called with data: {}", id, product);
         Product updated = productService.updateProduct(id, product);
-        if (updated == null) return ResponseEntity.notFound().build();
+        if (updated == null) {
+            log.warn("Product update failed: id {} not found", id);
+            return ResponseEntity.notFound().build();
+        }
+        log.info("Product updated with id {}", id);
         return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Integer id) {
+        log.debug("DELETE /api/products/{} called", id);
         productService.deleteProduct(id);
+        log.info("Product deleted with id {}", id);
         return ResponseEntity.noContent().build();
     }
 }
