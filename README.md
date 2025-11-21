@@ -128,11 +128,11 @@ Returns JSON response or base64-encoded Excel file
 
 ## Container Diagram
 
-![alt text](image.png)
+![alt text](container-diagram.png)
 
 ## System Diagram
 
-![alt text](image-1.png)
+![alt text](system-diagram.png)
 
 
 
