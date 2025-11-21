@@ -11,6 +11,10 @@ import java.time.DateTimeException;
 import java.time.Instant;
 import java.util.*;
 
+// added
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * AnalyticsService - DB-backed analytics logic.
  *
@@ -25,6 +29,9 @@ import java.util.*;
  */
 @Service
 public class AnalyticsService {
+
+    // added
+    private static final Logger log = LoggerFactory.getLogger(AnalyticsService.class);
 
     private final BidRepository bidRepository;
     private final ProductRepository productRepository;
@@ -41,18 +48,19 @@ public class AnalyticsService {
     /**
      * Called by EventsController when a new-bid event is posted.
      * NOTE: Analytics is read-only on the auction DB, so this method currently logs/validates only.
-     * If you later want Analytics to write the bid into DB, implement saving here and ensure DB privileges.
      */
     public void processNewBid(NewBidEventDto event) {
-        System.out.println("[Analytics] Received new-bid event: " + event);
-        // lightweight validation of timestamp (don't throw; just warn)
-        if (event == null) return;
+        log.debug("Received new-bid event: {}", event);
+        if (event == null) {
+            log.warn("Received null event in processNewBid()");
+            return;
+        }
         try {
             if (event.getTimestamp() != null) {
                 Instant.parse(event.getTimestamp());
             }
         } catch (DateTimeException ex) {
-            System.err.println("[Analytics] Warning: invalid timestamp: " + event.getTimestamp());
+            log.warn("Invalid timestamp in new-bid event: {}", event.getTimestamp());
         }
     }
 
@@ -61,22 +69,27 @@ public class AnalyticsService {
      * Currently logs/validates only (read-only).
      */
     public void processAuctionStatus(AuctionStatusEventDto event) {
-        System.out.println("[Analytics] Received auction-status event: " + event);
-        // optional validation could go here
+        log.debug("Received auction-status event: {}", event);
+        if (event == null) {
+            log.warn("Received null event in processAuctionStatus()");
+        }
     }
 
     /**
-     * Returns top bidders as a list of maps with keys:
+     * Returns top bidders as a list of maps:
      *  - userId, name, totalBids, totalAmount
      */
     public List<Map<String, Object>> getTopBidders(int limit) {
+        log.debug("Fetching top {} bidders", limit);
         List<Object[]> rows = bidRepository.findTopBiddersNative(limit);
         List<Map<String, Object>> result = new ArrayList<>();
 
-        if (rows == null || rows.isEmpty()) return result;
+        if (rows == null || rows.isEmpty()) {
+            log.info("No bidders found for analytics");
+            return result;
+        }
 
         for (Object[] r : rows) {
-            // expected: [ bidder_id, total_bids, total_amount ]
             Integer bidderId = r[0] == null ? null : toInteger(r[0]);
             long totalBids = r[1] == null ? 0L : toLong(r[1]);
             double totalAmount = r[2] == null ? 0.0 : toDouble(r[2]);
@@ -90,21 +103,25 @@ public class AnalyticsService {
             m.put("totalAmount", totalAmount);
             result.add(m);
         }
+        log.info("Top bidders result size: {}", result.size());
         return result;
     }
 
     /**
-     * Returns popular auctions (products) as a list of maps:
+     * Returns popular auctions (products):
      *  - auctionId, title, totalBids, highestBid
      */
     public List<Map<String, Object>> getPopularAuctions(int limit) {
+        log.debug("Fetching top {} popular auctions", limit);
         List<Object[]> rows = bidRepository.findPopularAuctionsNative(limit);
         List<Map<String, Object>> result = new ArrayList<>();
 
-        if (rows == null || rows.isEmpty()) return result;
+        if (rows == null || rows.isEmpty()) {
+            log.info("No popular auctions found for analytics");
+            return result;
+        }
 
         for (Object[] r : rows) {
-            // expected: [ product_id, title, total_bids, highest_bid ]
             Integer productId = r[0] == null ? null : toInteger(r[0]);
             String title = r[1] == null ? null : r[1].toString();
             long totalBids = r[2] == null ? 0L : toLong(r[2]);
@@ -117,16 +134,15 @@ public class AnalyticsService {
             m.put("highestBid", highestBid);
             result.add(m);
         }
+        log.info("Popular auctions result size: {}", result.size());
         return result;
     }
 
     /**
-     * Returns auction statistics for the given auctionId string (converted to int).
-     * Responds with Optional.empty() if auctionId is not a valid integer.
-     *
-     * Map keys: auctionId, title, totalBids, highestBid, lowestBid, averageBid, startTime, endTime
+     * Returns auction statistics (Optional).
      */
     public Optional<Map<String, Object>> getAuctionStats(String auctionIdStr) {
+        log.debug("Fetching auction stats for id '{}'", auctionIdStr);
         try {
             int auctionId = Integer.parseInt(auctionIdStr);
 
@@ -139,7 +155,6 @@ public class AnalyticsService {
             double avg = 0.0;
 
             if (statsRow != null) {
-                // statsRow expected: [ total_bids, highest_bid, lowest_bid, average_bid ]
                 totalBids = statsRow.length > 0 ? toLong(statsRow[0]) : 0L;
                 highest = statsRow.length > 1 ? toDouble(statsRow[1]) : 0.0;
                 lowest = statsRow.length > 2 ? toDouble(statsRow[2]) : 0.0;
@@ -152,10 +167,11 @@ public class AnalyticsService {
                 Product p = pOpt.get();
                 m.put("auctionId", p.getId());
                 m.put("title", p.getName());
-                // Product entity uses endTime; if you have startTime in DB, adjust accordingly
-                m.put("startTime", p.getEndTime());
+                m.put("startTime", p.getEndTime()); // adjust if model changes
                 m.put("endTime", p.getEndTime());
+                log.info("Stats found for auction {}", auctionId);
             } else {
+                log.warn("No product found for auction id {}", auctionId);
                 m.put("auctionId", auctionId);
                 m.put("title", null);
                 m.put("startTime", null);
@@ -169,6 +185,7 @@ public class AnalyticsService {
 
             return Optional.of(m);
         } catch (NumberFormatException ex) {
+            log.warn("Invalid auction id '{}'", auctionIdStr);
             return Optional.empty();
         }
     }
@@ -178,37 +195,24 @@ public class AnalyticsService {
     private long toLong(Object o) {
         if (o == null) return 0L;
         if (o instanceof Number) return ((Number) o).longValue();
-        String s = o.toString();
-        try {
-            return Long.parseLong(s);
-        } catch (NumberFormatException e) {
-            try {
-                // in case it's decimal text like "12.0"
-                return (long) Double.parseDouble(s);
-            } catch (NumberFormatException ex) {
-                return 0L;
-            }
+        try { return Long.parseLong(o.toString()); }
+        catch (NumberFormatException e) {
+            try { return (long) Double.parseDouble(o.toString()); }
+            catch (NumberFormatException ex) { return 0L; }
         }
     }
 
     private double toDouble(Object o) {
         if (o == null) return 0.0;
         if (o instanceof Number) return ((Number) o).doubleValue();
-        String s = o.toString();
-        try {
-            return Double.parseDouble(s);
-        } catch (NumberFormatException e) {
-            return 0.0;
-        }
+        try { return Double.parseDouble(o.toString()); }
+        catch (NumberFormatException e) { return 0.0; }
     }
 
     private Integer toInteger(Object o) {
         if (o == null) return null;
         if (o instanceof Number) return ((Number) o).intValue();
-        try {
-            return Integer.parseInt(o.toString());
-        } catch (NumberFormatException ex) {
-            return null;
-        }
+        try { return Integer.parseInt(o.toString()); }
+        catch (NumberFormatException ex) { return null; }
     }
 }
