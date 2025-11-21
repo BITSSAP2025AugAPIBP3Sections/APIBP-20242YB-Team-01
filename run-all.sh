@@ -5,6 +5,13 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "$0")" && pwd)"
 echo "Starting all services from ${ROOT_DIR}..."
 
+echo "Attempting to pull required images (best-effort)..."
+if docker compose pull --ignore-pull-failures; then
+  echo "Images pulled (or already present)."
+else
+  echo "Some image pulls failed, continuing to build/start what we can (pull failures ignored)."
+fi
+
 docker compose up --build -d
 
 echo "Waiting for databases and services to become healthy..."
