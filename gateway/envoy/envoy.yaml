@@ -46,6 +46,14 @@ static_resources:
                           route:
                             cluster: auction-service
                         - match:
+                            prefix: "/api/bids"
+                          route:
+                            cluster: auction-service
+                        - match:
+                            prefix: "/api/categories"
+                          route:
+                            cluster: auction-service
+                        - match:
                             prefix: "/api/payment"
                           route:
                             cluster: payment-service
