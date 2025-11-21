@@ -126,6 +126,16 @@ Returns JSON response or base64-encoded Excel file
 
 ---
 
+## Container Diagram
+
+![alt text](image.png)
+
+## System Diagram
+
+![alt text](image-1.png)
+
+
+
 ## Quick Start
 
 ### Prerequisites
@@ -156,13 +166,6 @@ cd APIBP-20242YB-Team-01
 # 3. Wait for services to initialize (2-3 minutes)
 # Watch logs: docker compose logs -f
 
-# 4. Verify services are healthy
-curl http://localhost:8080/api/users/health
-curl http://localhost:8080/api/auctions/health
-curl http://localhost:8080/api/payment/health
-curl http://localhost:8080/api/analytics/health
-```
-
 **What you get automatically:**
 -  **Complete microservices stack** (5 production-ready services)
 - **3 PostgreSQL databases** (isolated per service domain)
@@ -192,34 +195,6 @@ cd services/auction-service && ./mvnw spring-boot:run
 cd services/payment-service && npm install && npm start
 cd services/notification-service && go run cmd/notifier/main.go
 cd services/analytics-service && ./mvnw spring-boot:run
-```
-
----
-
-##  Testing the Platform
-
-### Quick Health Check
-
-```bash
-# API Gateway
-curl http://localhost:8080
-# Expected: Envoy response or default route
-
-# User Service
-curl http://localhost:8080/api/users/health
-# Expected: {"status":"UP"}
-
-# Auction Service
-curl http://localhost:8080/api/auctions/health
-# Expected: {"status":"UP"}
-
-# Payment Service
-curl http://localhost:8080/api/payment/health
-# Expected: {"status":"UP"}
-
-# Analytics Service
-curl http://localhost:8080/api/analytics/health
-# Expected: {"status":"UP"}
 ```
 
 ---
@@ -438,7 +413,7 @@ curl -X POST http://localhost:8080/api/analytics/graphql \
 
 ## API Endpoints
 
-### 🔐 User Service (Port 8081 → Gateway: /api/auth, /api/users)
+### User Service (Port 8081 → Gateway: /api/auth, /api/users)
 
 | Endpoint | Method | Description | Auth Required | Role |
 |----------|--------|-------------|---------------|------|
@@ -447,11 +422,6 @@ curl -X POST http://localhost:8080/api/analytics/graphql \
 | `/api/auth/refresh` | POST | Refresh access token using refresh token | Yes | - |
 | `/api/auth/logout` | POST | Logout and invalidate tokens | Yes | - |
 | `/api/users/me` | GET | Get current user profile | Yes | - |
-| `/api/users/{id}` | GET | Get user details by ID | Yes | - |
-| `/api/users` | GET | List all users (paginated) | Yes | ADMIN |
-| `/api/users/{id}` | PUT | Update user profile | Yes | Owner/ADMIN |
-| `/api/users/{id}` | DELETE | Delete user account | Yes | ADMIN |
-| `/api/users/health` | GET | Service health check | No | - |
 
 **Sample Request Bodies:**
 
@@ -490,7 +460,6 @@ curl -X POST http://localhost:8080/api/analytics/graphql \
 | `/api/products` | POST | Create new product | Yes | SELLER |
 | `/api/categories` | GET | List all categories | No | - |
 | `/api/categories/{id}` | GET | Get category details | No | - |
-| `/api/auctions/health` | GET | Service health check | No | - |
 
 **Sample Request Bodies:**
 
@@ -523,8 +492,7 @@ curl -X POST http://localhost:8080/api/analytics/graphql \
 | `/api/payment/wallet/freeze` | POST | Lock funds for bid (internal) | Yes | System |
 | `/api/payment/wallet/unfreeze` | POST | Release locked funds | Yes | System |
 | `/api/payment/wallet/deduct` | POST | Deduct funds from wallet | Yes | System |
-| `/api/payment/transactions/{userId}` | GET | Get transaction history | Yes | Owner/ADMIN |
-| `/api/payment/health` | GET | Service health check | No | - |
+| `/api/payment/transactions/{userId}` | GET | Get transaction 
 
 **Sample Request Bodies:**
 
@@ -557,8 +525,6 @@ curl -X POST http://localhost:8080/api/analytics/graphql \
 | `/api/analytics/v1/bidders/top` | GET | Get top bidders by total amount | Yes | ADMIN |
 | `/api/analytics/v1/auctions/popular` | GET | Get popular auctions by bid count | Yes | ADMIN |
 | `/api/analytics/v1/auctions/{id}/stats` | GET | Get detailed auction statistics | Yes | ADMIN |
-| `/api/analytics/v1/revenue` | GET | Get revenue analytics | Yes | ADMIN |
-| `/api/analytics/health` | GET | Service health check | No | - |
 
 **Query Parameters:**
 - `limit` (number): Limit results (default: 10, max: 100)
@@ -571,41 +537,11 @@ curl -X POST http://localhost:8080/api/analytics/graphql \
 
 ```graphql
 query {
-  # Get top bidders
-  topBidders(limit: 10) {
-    userId
-    userName
-    totalBids
-    totalAmount
-    averageBidAmount
-    rank
-  }
-  
-  # Get auction statistics
-  auctionStats(auctionId: 1) {
-    auctionId
-    title
-    totalBids
-    uniqueBidders
-    averageBidAmount
-    highestBid
-    lowestBid
-  }
-  
   # Download Excel report (returns base64)
   downloadProductReport(productId: 1) {
     filename
     base64Content
     generatedAt
-  }
-  
-  # Get popular products
-  popularProducts(limit: 5) {
-    productId
-    productName
-    totalAuctions
-    totalBids
-    totalRevenue
   }
 }
 ```
@@ -614,17 +550,6 @@ query {
 
 ```graphql
 mutation {
-  # Process new bid event (internal)
-  processNewBid(
-    bidId: 123
-    userId: 456
-    productId: 1
-    amount: 150.00
-  ) {
-    success
-    message
-  }
-  
   # Process auction completion
   processAuctionCompletion(
     auctionId: 1
@@ -636,20 +561,7 @@ mutation {
   }
 }
 ```
-
-**Example GraphQL Request:**
-
-```bash
-curl -X POST http://localhost:8080/api/analytics/graphql \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "query": "query { topBidders(limit: 5) { userId userName totalBids totalAmount rank } }"
-  }'
-```
-
 ---
-
 ### API Gateway Routes (Envoy - Port 8080)
 
 All client requests go through the API Gateway with intelligent routing:
@@ -750,9 +662,7 @@ All client requests go through the API Gateway with intelligent routing:
 -  RabbitMQ event consumption (fan-out exchange)
 -  Support for multiple event types:
   - Bid placed
-  - Bid outbid
   - Auction won
-  - Auction ended
   - Payment confirmation
   - Payment failed
 -  Configurable SMTP settings via environment variables
@@ -1326,13 +1236,6 @@ This project is built by students as part of the **API-Based Product Development
 - **OpenSearch Dashboards:** `http://localhost:5601`
 - **RabbitMQ Management:** `http://localhost:15672` (guest/guest)
 - **Envoy Admin:** `http://localhost:9901`
-
-### Quick Links
--  [API Documentation](api-specs/)
-- [Deployment Guide](#-deployment)
--  [Testing Guide](#-testing-the-platform)
-- [Troubleshooting](#-troubleshooting)
--  [Contributing Guidelines](#-contributing)
 
 ### Common Commands
 ```bash
