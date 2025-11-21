@@ -101,6 +101,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://auction-db:5432/auction_db
       SPRING_DATASOURCE_USERNAME: auction_user
       SPRING_DATASOURCE_PASSWORD: auction_pass
+      JWT_SECRET: MySuperSecretKey123
       USER_SERVICE_BASE_URL: http://user-service:8081
     depends_on:
       - auction-db

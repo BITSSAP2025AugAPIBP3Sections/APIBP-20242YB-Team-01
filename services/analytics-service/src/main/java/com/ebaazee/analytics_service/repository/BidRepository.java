@@ -40,4 +40,7 @@ public interface BidRepository extends JpaRepository<Bid, Integer> {
     @Query(value = "SELECT COUNT(*) AS total_bids, MAX(amount) AS highest_bid, MIN(amount) AS lowest_bid, AVG(amount) AS average_bid " +
                    "FROM bids WHERE product_id = :productId", nativeQuery = true)
     List<Object[]> findAuctionStatsNativeList(@Param("productId") int productId);
+
+    // convenience method to fetch bids for a product
+    List<Bid> findByProductId(Integer productId);
 }
