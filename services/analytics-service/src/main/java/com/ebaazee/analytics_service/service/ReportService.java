@@ -13,8 +13,15 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+// added
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Service
 public class ReportService {
+
+    // added
+    private static final Logger log = LoggerFactory.getLogger(ReportService.class);
 
     private final ProductRepository productRepository;
     private final BidRepository bidRepository;
@@ -25,6 +32,8 @@ public class ReportService {
     }
 
     public byte[] generateProductReport() throws IOException {
+        log.debug("Starting product report generation");
+
         try (Workbook workbook = new XSSFWorkbook()) {
             Sheet sheet = workbook.createSheet("Product Report");
 
@@ -37,6 +46,8 @@ public class ReportService {
             }
 
             List<Product> products = productRepository.findAll();
+            log.info("Total products found for report: {}", products.size());
+
             int rowIndex = 1;
             for (Product product : products) {
                 Row row = sheet.createRow(rowIndex++);
@@ -50,10 +61,15 @@ public class ReportService {
                     row.createCell(2).setCellValue(highest);
                     row.createCell(3).setCellValue(lowest);
                     row.createCell(4).setCellValue(bids.size());
+
+                    log.debug("Product {} has {} bids, highest: {}, lowest: {}", 
+                              product.getId(), bids.size(), highest, lowest);
                 } else {
                     row.createCell(2).setCellValue(0);
                     row.createCell(3).setCellValue(0);
                     row.createCell(4).setCellValue(0);
+
+                    log.debug("Product {} has no bids", product.getId());
                 }
             }
 
@@ -61,7 +77,13 @@ public class ReportService {
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             workbook.write(out);
+
+            log.info("Product report generated successfully ({} bytes)", out.size());
             return out.toByteArray();
+
+        } catch (Exception e) {
+            log.error("Failed to generate product report", e);
+            throw e;
         }
     }
 
