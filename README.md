@@ -2,7 +2,7 @@
 
 # Ebaazee - Microservices-Based Auction Platform
 
-### Production-Ready REST APIs for Real-Time Auction Management
+### REST APIs for Real-Time Auction Management
 
 
 </div>
@@ -126,15 +126,13 @@ Returns JSON response or base64-encoded Excel file
 
 ---
 
-## Container Diagram
-
-![alt text](container-diagram.png)
-
 ## System Diagram
 
 ![alt text](system-diagram.png)
 
+## Container Diagram
 
+![alt text](container-diagram.png)
 
 ## Quick Start
 
@@ -203,7 +201,7 @@ cd services/analytics-service && ./mvnw spring-boot:run
 
 ####  Register a New User
 ```bash
-curl -X POST http://localhost:8080/api/auth/register \
+curl -X POST http://localhost:8080/api/auth/v1/register \
   -H "Content-Type: application/json" \
   -d '{
     "name": "John Doe",
@@ -224,7 +222,7 @@ curl -X POST http://localhost:8080/api/auth/register \
 
 #### Login and Obtain JWT Token
 ```bash
-curl -X POST http://localhost:8080/api/auth/login \
+curl -X POST http://localhost:8080/api/auth/v1/login \
   -H "Content-Type: application/json" \
   -d '{
     "email": "john.doe@example.com",
@@ -244,7 +242,7 @@ export TOKEN="<your-access-token>"
 
 ####  View Available Auctions
 ```bash
-curl http://localhost:8080/api/auctions \
+curl http://localhost:8080/api/auctions/v1 \
   -H "Authorization: Bearer $TOKEN"
 
 # Expected Response:
@@ -265,7 +263,7 @@ curl http://localhost:8080/api/auctions \
 
 ####  Get Product Details
 ```bash
-curl http://localhost:8080/api/products/1 \
+curl http://localhost:8080/api/products/v1 \
   -H "Authorization: Bearer $TOKEN"
 
 # Expected Response:
@@ -296,7 +294,7 @@ curl http://localhost:8080/api/payment/wallet/<userId> \
 
 #### Place a Bid
 ```bash
-curl -X POST http://localhost:8080/api/bids \
+curl -X POST http://localhost:8080/api/bids/v1 \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -323,7 +321,7 @@ curl -X POST http://localhost:8080/api/bids \
 
 #### View Bids for an Auction
 ```bash
-curl http://localhost:8080/api/bids/auction/1 \
+curl http://localhost:8080/api/bids/auction/v1 \
   -H "Authorization: Bearer $TOKEN"
 
 # Expected Response:
@@ -388,7 +386,7 @@ curl http://localhost:8080/api/analytics/v1/auctions/popular?limit=5 \
 
 #### Download Excel Report (GraphQL - Admin Only)
 ```bash
-curl -X POST http://localhost:8080/api/analytics/graphql \
+curl -X POST http://localhost:8080/api/analytics/v1/graphql \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -417,11 +415,8 @@ curl -X POST http://localhost:8080/api/analytics/graphql \
 
 | Endpoint | Method | Description | Auth Required | Role |
 |----------|--------|-------------|---------------|------|
-| `/api/auth/register` | POST | Register new user account | No | - |
-| `/api/auth/login` | POST | Login and obtain JWT tokens | No | - |
-| `/api/auth/refresh` | POST | Refresh access token using refresh token | Yes | - |
-| `/api/auth/logout` | POST | Logout and invalidate tokens | Yes | - |
-| `/api/users/me` | GET | Get current user profile | Yes | - |
+| `/api/auth/v1/register` | POST | Register new user account | No | - |
+| `/api/auth/v1/login` | POST | Login and obtain JWT tokens | No | - |
 
 **Sample Request Bodies:**
 
@@ -568,15 +563,13 @@ All client requests go through the API Gateway with intelligent routing:
 
 | Route Pattern | Target Service | Features |
 |---------------|----------------|----------|
-| `/api/auth/*` | User Service (8081) | Retry on 5xx (2 attempts), 2s timeout |
-| `/api/users/*` | User Service (8081) | Retry on 5xx (2 attempts), 2s timeout |
-| `/api/products/*` | Auction Service (8082) | Retry on 5xx (1 attempt), 2s timeout |
-| `/api/auctions/*` | Auction Service (8082) | Circuit breaker (max 100 connections) |
-| `/api/bids/*` | Auction Service (8082) | Circuit breaker (max 100 connections) |
-| `/api/categories/*` | Auction Service (8082) | Load balancing (round-robin) |
+| `/api/auth/v1*` | User Service (8081) | Retry on 5xx (2 attempts), 2s timeout |
+| `/api/users/v1*` | User Service (8081) | Retry on 5xx (2 attempts), 2s timeout |
+| `/api/products/v1*` | Auction Service (8082) | Retry on 5xx (1 attempt), 2s timeout |
+| `/api/auctions/v1*` | Auction Service (8082) | Circuit breaker (max 100 connections) |
+| `/api/bids/v1*` | Auction Service (8082) | Circuit breaker (max 100 connections) |
+| `/api/categories/v1*` | Auction Service (8082) | Load balancing (round-robin) |
 | `/api/payment/*` | Payment Service (8086) | Circuit breaker (max 50 connections) |
-| `/api/notifications/*` | Notification Service (8083) | Standard routing |
-| `/api/analytics/graphql` | Analytics Service (8085) | Path rewrite to `/graphql` |
 | `/api/analytics/*` | Analytics Service (8085) | Standard routing |
 
 **Gateway Features:**
