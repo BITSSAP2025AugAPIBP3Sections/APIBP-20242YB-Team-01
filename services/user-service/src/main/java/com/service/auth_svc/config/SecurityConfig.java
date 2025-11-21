@@ -50,7 +50,7 @@ public class SecurityConfig {
 
                     auth
                             // Allow registration and login without auth
-                            .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/login", "/api/auth/refresh-token", "/api/auth/revoke")
+                            .requestMatchers(HttpMethod.POST, "/api/auth/v1/register", "/api/auth/v1/login", "/api/auth/v1/refresh-token", "/api/auth/v1/revoke")
                             .permitAll()
 
                             // Allow oauth2 endpoints

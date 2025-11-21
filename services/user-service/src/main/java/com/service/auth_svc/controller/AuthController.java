@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/auth/v1")
 @RequiredArgsConstructor
 public class AuthController {
 
@@ -24,6 +24,7 @@ public class AuthController {
     private final AuthService authService;
 
     /**
+     * POST /api/auth/v1/register
      * User Registration
      */
     @PostMapping("/register")
@@ -35,6 +36,7 @@ public class AuthController {
     }
 
     /**
+     * POST /api/auth/v1/login
      * User Login
      */
     @PostMapping("/login")
@@ -46,6 +48,7 @@ public class AuthController {
     }
 
     /**
+     * POST /api/auth/v1/refresh-token
      * Refresh JWT Token
      */
     @PostMapping("/refresh-token")
@@ -57,6 +60,7 @@ public class AuthController {
     }
 
     /**
+     * POST /api/auth/v1/revoke
      * Revoke refresh token (logout)
      */
     @PostMapping("/revoke")
@@ -68,6 +72,7 @@ public class AuthController {
     }
 
     /**
+     * POST /api/auth/v1/revoke-all
      * Revoke all refresh tokens for the authenticated user (logout everywhere)
      */
     @PostMapping("/revoke-all")
@@ -78,6 +83,10 @@ public class AuthController {
         return ResponseEntity.ok("All refresh tokens revoked for user: " + email);
     }
 
+    /**
+     * GET /api/auth/v1/me
+     * Get current authenticated user's profile
+     */
     @GetMapping("/me")
     public ResponseEntity<UserProfileDTO> getCurrentUser(Authentication authentication) {
         String email = authentication.getName();
@@ -87,6 +96,10 @@ public class AuthController {
         return ResponseEntity.ok(profile);
     }
 
+    /**
+     * GET /api/auth/v1/users/{id}
+     * Get user profile by user ID
+     */
     @GetMapping("/users/{id}")
     public ResponseEntity<UserProfileDTO> getUserById(@PathVariable Long id) {
         log.debug("Fetching user profile by id={}", id);

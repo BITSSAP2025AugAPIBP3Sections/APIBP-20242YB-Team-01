@@ -13,25 +13,32 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RestController
-@RequestMapping("/api/bids")
+@RequestMapping("/api/bids/v1")
 public class BidController {
 
     private static final Logger log = LoggerFactory.getLogger(BidController.class);
 
     @Autowired
     private BidService bidService;
+
     @Autowired
     private ProductService productService;
 
+    /**
+     * GET /api/bids/v1
+     */
     @GetMapping
     public List<Bid> getAllBids() {
-        log.debug("GET /api/bids called");
+        log.debug("GET /api/bids/v1 called");
         return bidService.getAllBids();
     }
 
+    /**
+     * GET /api/bids/v1/{id}
+     */
     @GetMapping("/{id}")
     public ResponseEntity<Bid> getBidById(@PathVariable Integer id) {
-        log.debug("GET /api/bids/{} called", id);
+        log.debug("GET /api/bids/v1/{} called", id);
         return bidService.getBidById(id)
                 .map(b -> {
                     log.info("Bid found with id {}", id);
@@ -43,9 +50,12 @@ public class BidController {
                 });
     }
 
+    /**
+     * POST /api/bids/v1
+     */
     @PostMapping
     public ResponseEntity<?> placeBid(@RequestBody Bid bid) {
-        log.debug("POST /api/bids called with bid: {}", bid);
+        log.debug("POST /api/bids/v1 called with bid: {}", bid);
 
         Product product = bid.getProduct();
         if (product == null) {
@@ -80,20 +90,24 @@ public class BidController {
                 }
             }
         }
+
         if (bidderId == null) {
             log.warn("Bid rejected: bidder id required");
             return ResponseEntity.badRequest().body("Bidder id required");
         }
 
         bid.setBidderId(bidderId);
+
         if (bidService.hasUserBidOnProduct(bidderId, product)) {
             log.warn("Bid rejected: user {} already bid on product {}", bidderId, product.getId());
             return ResponseEntity.badRequest().body("User already bid");
         }
+
         if (product.getFrozen() != null && product.getFrozen()) {
             log.warn("Bid rejected: product {} is frozen/auction closed", product.getId());
             return ResponseEntity.badRequest().body("Auction closed");
         }
+
         if (bid.getAmount() <= product.getCurrentBid()) {
             log.warn("Bid rejected: {} not higher than current {}", bid.getAmount(), product.getCurrentBid());
             return ResponseEntity.badRequest().body("Bid not higher than current");
