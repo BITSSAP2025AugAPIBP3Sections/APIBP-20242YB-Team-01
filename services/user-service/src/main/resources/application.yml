@@ -31,3 +31,10 @@ logging:
   level:
     org.springframework: INFO
     com.service.auth_svc: DEBUG
+
+# SpringDoc configuration to work around Spring Boot 3.5.x compatibility issue
+springdoc:
+  show-actuator: false
+  default-produces-media-type: application/json
+  default-consumes-media-type: application/json
+  override-with-generic-response: false
