@@ -142,11 +142,6 @@ Once the services are running, access the Swagger UI at:
 - 🔐 **JWT authentication support** - Use the "Authorize" button to add your token
 - 📥 **Export OpenAPI specs** for client code generation
 
-### Documentation:
-- � **Quick Start Guide**: [SWAGGER_QUICKSTART.md](./SWAGGER_QUICKSTART.md) - Get started in 5 minutes
-- 📖 **Detailed Documentation**: [SWAGGER_DOCUMENTATION.md](./SWAGGER_DOCUMENTATION.md) - Complete usage guide
-- 📋 **Integration Summary**: [SWAGGER_INTEGRATION_SUMMARY.md](./SWAGGER_INTEGRATION_SUMMARY.md) - Technical details
-
 ---
 
 ## System Diagram
