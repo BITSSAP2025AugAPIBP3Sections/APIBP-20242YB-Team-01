@@ -124,6 +124,31 @@ Returns JSON response or base64-encoded Excel file
 
 ---
 
+## API Documentation (Swagger/OpenAPI)
+
+📚 **Interactive API documentation is available for all services via Swagger UI**
+
+Once the services are running, access the Swagger UI at:
+
+| Service | Swagger UI | OpenAPI Spec |
+|---------|------------|--------------|
+| **Analytics Service** | `http://localhost:8085/swagger-ui.html` | `http://localhost:8085/v3/api-docs` |
+| **User Service** | `http://localhost:8081/swagger-ui.html` | `http://localhost:8081/v3/api-docs` |
+| **Auction Service** | `http://localhost:8082/swagger-ui.html` | `http://localhost:8082/v3/api-docs` |
+
+### Features:
+- 🔍 **Explore all endpoints** with detailed request/response schemas
+- 🧪 **Test APIs directly** from the browser
+- 🔐 **JWT authentication support** - Use the "Authorize" button to add your token
+- 📥 **Export OpenAPI specs** for client code generation
+
+### Documentation:
+- � **Quick Start Guide**: [SWAGGER_QUICKSTART.md](./SWAGGER_QUICKSTART.md) - Get started in 5 minutes
+- 📖 **Detailed Documentation**: [SWAGGER_DOCUMENTATION.md](./SWAGGER_DOCUMENTATION.md) - Complete usage guide
+- 📋 **Integration Summary**: [SWAGGER_INTEGRATION_SUMMARY.md](./SWAGGER_INTEGRATION_SUMMARY.md) - Technical details
+
+---
+
 ## System Diagram
 
 ![alt text](system-diagram.png)
