@@ -1,18 +1,21 @@
 package com.ebaazee.analytics_service.controller;
 
 import com.ebaazee.analytics_service.service.AnalyticsService;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * /api/analytics/v1
- *
+ * <p>
  * Endpoints:
  * GET /api/analytics/v1/bidders/top?limit=2
  * GET /api/analytics/v1/auctions/popular?limit=2
@@ -32,9 +35,9 @@ public class AnalyticsController {
     }
 
     @GetMapping("/analytics/top-bidders")
-    public ResponseEntity<List<Map<String,Object>>> topBidders(@RequestParam(defaultValue = "2") int limit) {
+    public ResponseEntity<List<Map<String, Object>>> topBidders(@RequestParam(defaultValue = "2") int limit) {
         log.debug("GET /api/v1/analytics/top-bidders called with limit {}", limit);
-        List<Map<String,Object>> result = analyticsService.getTopBidders(limit);
+        List<Map<String, Object>> result = analyticsService.getTopBidders(limit);
         log.info("Returning {} top bidders", result.size());
         return ResponseEntity.ok(result);
     }
@@ -43,7 +46,7 @@ public class AnalyticsController {
     public ResponseEntity<List<Map<String, Object>>> getPopularAuctions(
             @RequestParam(name = "limit", defaultValue = "2") int limit) {
         log.debug("GET /api/analytics/v1/auctions/popular called with limit {}", limit);
-        List<Map<String,Object>> result = analyticsService.getPopularAuctions(limit);
+        List<Map<String, Object>> result = analyticsService.getPopularAuctions(limit);
         log.info("Returning {} popular auctions", result.size());
         return ResponseEntity.ok(result);
     }

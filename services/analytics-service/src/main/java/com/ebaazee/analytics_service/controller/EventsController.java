@@ -1,20 +1,20 @@
 package com.ebaazee.analytics_service.controller;
 
-import com.ebaazee.analytics_service.dto.NewBidEventDto;
 import com.ebaazee.analytics_service.dto.AuctionStatusEventDto;
+import com.ebaazee.analytics_service.dto.NewBidEventDto;
 import com.ebaazee.analytics_service.service.AnalyticsService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-// added
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/analytics/v1/events")
 public class EventsController {
 
-    // added
     private static final Logger log = LoggerFactory.getLogger(EventsController.class);
 
     private final AnalyticsService analyticsService;
@@ -35,7 +35,8 @@ public class EventsController {
     public ResponseEntity<Void> auctionStatus(@RequestBody AuctionStatusEventDto event) {
         log.debug("POST /api/v1/events/auction-status with event: {}", event);
         analyticsService.processAuctionStatus(event);
-        log.info("Processed auction status event for auction {} with status {}", event.getAuctionId(), event.getStatus());
+        log.info("Processed auction status event for auction {} with status {}", event.getAuctionId(),
+                event.getStatus());
         return ResponseEntity.ok().build();
     }
 }

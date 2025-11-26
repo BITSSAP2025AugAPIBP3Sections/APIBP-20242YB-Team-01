@@ -4,18 +4,19 @@ import com.ebaazee.analytics_service.model.Bid;
 import com.ebaazee.analytics_service.model.Product;
 import com.ebaazee.analytics_service.repository.BidRepository;
 import com.ebaazee.analytics_service.repository.ProductRepository;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.stereotype.Service;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
-
-// added
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ReportService {
@@ -62,8 +63,8 @@ public class ReportService {
                     row.createCell(3).setCellValue(lowest);
                     row.createCell(4).setCellValue(bids.size());
 
-                    log.debug("Product {} has {} bids, highest: {}, lowest: {}", 
-                              product.getId(), bids.size(), highest, lowest);
+                    log.debug("Product {} has {} bids, highest: {}, lowest: {}",
+                            product.getId(), bids.size(), highest, lowest);
                 } else {
                     row.createCell(2).setCellValue(0);
                     row.createCell(3).setCellValue(0);
@@ -73,7 +74,9 @@ public class ReportService {
                 }
             }
 
-            for (int i = 0; i < headers.length; i++) sheet.autoSizeColumn(i);
+            for (int i = 0; i < headers.length; i++) {
+                sheet.autoSizeColumn(i);
+            }
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             workbook.write(out);

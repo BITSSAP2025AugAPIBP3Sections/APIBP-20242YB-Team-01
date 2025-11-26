@@ -7,20 +7,17 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.filter.OncePerRequestFilter;
-
-import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.List;
-
-// added
+import javax.crypto.SecretKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
@@ -63,8 +60,9 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 Integer userId = null;
 
                 if (userIdObj != null) {
-                    if (userIdObj instanceof Number) userId = ((Number) userIdObj).intValue();
-                    else {
+                    if (userIdObj instanceof Number) {
+                        userId = ((Number) userIdObj).intValue();
+                    } else {
                         try {
                             userId = Integer.parseInt(userIdObj.toString());
                         } catch (Exception ignored) {
