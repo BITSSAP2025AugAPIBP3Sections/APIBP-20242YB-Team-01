@@ -4,13 +4,12 @@ import com.service.auth_svc.entity.RefreshToken;
 import com.service.auth_svc.entity.User;
 import com.service.auth_svc.exception.CustomException;
 import com.service.auth_svc.repository.RefreshTokenRepository;
+import java.time.Instant;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
-import java.time.Instant;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor

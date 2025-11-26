@@ -81,6 +81,9 @@ services:
       OPENSEARCH_HOST: "http://opensearch-node1:9200"
       OPENSEARCH_USERNAME: admin
       OPENSEARCH_PASSWORD: quartz_EB_@5911
+      # OAuth2 Configuration (Set these to enable Google OAuth2 login)
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
     depends_on:
       - auth-db
       - redis

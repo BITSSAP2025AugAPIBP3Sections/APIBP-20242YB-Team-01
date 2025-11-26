@@ -11,7 +11,6 @@ public class JwtConfig {
     private long accessTokenExpirationMs;
     private long refreshTokenExpirationMs;
 
-    // Getters and setters
     public String getSecret() {
         return secret;
     }
