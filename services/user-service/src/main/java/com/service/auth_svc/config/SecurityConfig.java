@@ -3,6 +3,8 @@ package com.service.auth_svc.config;
 import com.service.auth_svc.service.CustomOAuth2UserService;
 import com.service.auth_svc.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -14,16 +16,32 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-// added
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+/**
+ * Spring Security configuration for the authentication service.
+ * 
+ * <p>Implements a stateless JWT-based authentication architecture with support
+ * for both traditional username/password login and OAuth2 social login (Google).</p>
+ * 
+ * <p><b>Security Architecture:</b></p>
+ * <ul>
+ *   <li><b>Stateless Sessions:</b> No server-side session storage, all state in JWT tokens</li>
+ *   <li><b>JWT Authentication:</b> Bearer tokens validated via JwtAuthenticationFilter</li>
+ *   <li><b>OAuth2 Integration:</b> Social login with Google (extensible to other providers)</li>
+ *   <li><b>Method Security:</b> Supports @PreAuthorize, @PostAuthorize annotations</li>
+ *   <li><b>CORS/CSRF:</b> Disabled as CORS is handled by API Gateway and CSRF is not needed for stateless APIs</li>
+ * </ul>
+ * 
+ * <p><b>Public Endpoints:</b> Registration, login, token refresh, OAuth2 callbacks, Swagger UI</p>
+ * 
+ * @author APIBP Team
+ * @version 1.0
+ * @since 2025-11-26
+ */
 @Configuration
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    // added
     private static final Logger log = LoggerFactory.getLogger(SecurityConfig.class);
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -31,6 +49,23 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2AuthenticationSuccessHandler oauth2SuccessHandler;
 
+    /**
+     * Configures the security filter chain with JWT and OAuth2 authentication.
+     * 
+     * <p>This method defines the security rules for the application:</p>
+     * <ul>
+     *   <li>Disables CSRF protection (not needed for stateless JWT APIs)</li>
+     *   <li>Disables CORS (handled by API Gateway/Envoy)</li>
+     *   <li>Configures public endpoints (registration, login, OAuth2, Swagger)</li>
+     *   <li>Sets session management to STATELESS</li>
+     *   <li>Adds JWT authentication filter before Spring Security's default filter</li>
+     *   <li>Configures OAuth2 login with custom user service and success handler</li>
+     * </ul>
+     * 
+     * @param http HttpSecurity builder for configuring security rules
+     * @return SecurityFilterChain configured security filter chain
+     * @throws Exception if configuration fails
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
@@ -49,19 +84,20 @@ public class SecurityConfig {
                     log.debug("Configuring public and protected endpoints");
 
                     auth
-                            // Allow registration and login without auth
-                            .requestMatchers(HttpMethod.POST, "/api/auth/v1/register", "/api/auth/v1/login", "/api/auth/v1/refresh-token", "/api/auth/v1/revoke")
+                            // Public endpoints: registration, login, token management
+                            .requestMatchers(HttpMethod.POST, "/api/auth/v1/register", "/api/auth/v1/login",
+                                    "/api/auth/v1/refresh-token", "/api/auth/v1/revoke")
                             .permitAll()
 
-                            // Allow oauth2 endpoints
+                            // Public endpoints: OAuth2 authentication flows
                             .requestMatchers("/oauth2/**", "/login/**")
                             .permitAll()
 
-                            // Allow Swagger/OpenAPI endpoints
+                            // Public endpoints: API documentation (Swagger/OpenAPI)
                             .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html")
                             .permitAll()
 
-                            // All other requests must be authenticated
+                            // Protected endpoints: all other requests require authentication
                             .anyRequest().authenticated();
                 })
                 .sessionManagement(session -> {
@@ -80,10 +116,23 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // PasswordEncoder bean moved to AppBeansConfig to avoid circular dependency
-
+    /**
+     * Provides the Spring Security AuthenticationManager bean.
+     * 
+     * <p>The AuthenticationManager is responsible for processing authentication requests.
+     * It delegates to authentication providers (e.g., DaoAuthenticationProvider) to
+     * validate credentials.</p>
+     * 
+     * <p><b>Note:</b> PasswordEncoder bean is defined in AppBeansConfig to avoid circular
+     * dependency issues.</p>
+     * 
+     * @param authenticationConfiguration Spring Security authentication configuration
+     * @return AuthenticationManager the configured authentication manager
+     * @throws Exception if initialization fails
+     */
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+            throws Exception {
         log.debug("Initializing AuthenticationManager");
         return authenticationConfiguration.getAuthenticationManager();
     }
