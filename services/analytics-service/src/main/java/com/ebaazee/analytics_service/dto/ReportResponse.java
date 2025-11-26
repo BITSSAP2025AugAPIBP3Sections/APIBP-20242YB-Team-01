@@ -4,7 +4,8 @@ public class ReportResponse {
     private String filename;
     private String base64Content;
 
-    public ReportResponse() {}
+    public ReportResponse() {
+    }
 
     public ReportResponse(String filename, String base64Content) {
         this.filename = filename;

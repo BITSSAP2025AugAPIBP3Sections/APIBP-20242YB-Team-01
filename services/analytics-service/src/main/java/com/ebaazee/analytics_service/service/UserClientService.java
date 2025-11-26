@@ -1,18 +1,15 @@
 package com.ebaazee.analytics_service.service;
 
-import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.beans.factory.annotation.Value;
-import reactor.core.publisher.Mono;
-
-// added
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 @Service
 public class UserClientService {
 
-    // added
     private static final Logger log = LoggerFactory.getLogger(UserClientService.class);
 
     private final WebClient webClient;
@@ -50,7 +47,13 @@ public class UserClientService {
     private static class UserResponse {
         private String userId;
         private String name;
-        public String getName(){ return name; }
-        public void setName(String name){ this.name = name; }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
     }
 }
