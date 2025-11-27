@@ -33,10 +33,16 @@ public class Bid {
     @Column(name = "bidder_id")
     private Integer bidderId;
 
+    // Bidder email for notification purposes
+    @Column(name = "email")
+    private String email;
+
     // Reservation id returned by payment.freeze to correlate payment events
+    @Column(name = "reservation_id")
     private String reservationId;
 
     // status: PENDING, PAID, FAILED
+    @Column(name = "status")
     private String status;
 
     // Lombok will generate constructors, getters, setters

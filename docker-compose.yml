@@ -152,7 +152,7 @@ services:
       - "8083:8080"
     environment:
       RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
-      QUEUE_BINDINGS: "payment.locked,payment.success,payment.failed"
+      QUEUE_BINDINGS: "payment.locked,payment.success,payment.failed,auction.winner,auction.seller"
       SMTP_HOST: smtp.gmail.com
       SMTP_PORT: "587"
       OPENSEARCH_HOST: "http://opensearch-node1:9200"

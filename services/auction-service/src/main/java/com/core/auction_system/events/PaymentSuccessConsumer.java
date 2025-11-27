@@ -105,6 +105,53 @@ public class PaymentSuccessConsumer {
                             }
                         }
 
+                        // If we processed a payment.success for a reservationId, publish winner/loser notifications
+                        if ("payment.success".equals(eventKey) && reservationId != null && !reservationId.isEmpty()) {
+                            try {
+                                Optional<Bid> maybeWin = bidRepository.findByReservationId(reservationId);
+                                if (maybeWin.isPresent()) {
+                                    Bid winBid = maybeWin.get();
+                                    Product winProd = winBid.getProduct();
+
+                                    // Winner notification payload
+                                    try {
+                                        com.fasterxml.jackson.databind.node.ObjectNode winner = mapper.createObjectNode();
+                                        winner.put("userId", String.valueOf(winBid.getBidderId()));
+                                        winner.put("amount", winBid.getAmount());
+                                        winner.put("auctionId", winProd != null && winProd.getId() != null ? String.valueOf(winProd.getId()) : "");
+                                        winner.put("reservationId", reservationId);
+                                        winner.put("message", "Congratulations! You won the auction for '" + (winProd != null ? winProd.getName() : "item") + "' with bid " + winBid.getAmount());
+                                        channel.basicPublish("events", "auction.winner", null, mapper.writeValueAsBytes(winner));
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+
+                                    // Loser notifications: all other bids for same product
+                                    try {
+                                        java.util.List<Bid> allBids = bidRepository.findByProduct(winProd);
+                                        for (Bid other : allBids) {
+                                            if (other.getId() != null && other.getId().equals(winBid.getId())) continue;
+                                            try {
+                                                com.fasterxml.jackson.databind.node.ObjectNode loser = mapper.createObjectNode();
+                                                loser.put("userId", other.getBidderId() == null ? "" : String.valueOf(other.getBidderId()));
+                                                loser.put("amount", other.getAmount());
+                                                loser.put("auctionId", winProd != null && winProd.getId() != null ? String.valueOf(winProd.getId()) : "");
+                                                loser.put("reservationId", other.getReservationId() == null ? "" : other.getReservationId());
+                                                loser.put("message", "Your bid of " + other.getAmount() + " did not win for '" + (winProd != null ? winProd.getName() : "item") + "'");
+                                                channel.basicPublish("events", "auction.loser", null, mapper.writeValueAsBytes(loser));
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+
                         // fallback: only on payment.success and only if reservationId path didn't process
                         if (!processed && "payment.success".equals(eventKey) && auctionId != null) {
                             try {

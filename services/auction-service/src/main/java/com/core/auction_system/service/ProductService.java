@@ -24,9 +24,19 @@ public class ProductService {
     }
 
     public Product createProduct(Product product) {
-        if (product.getEndTime() != null && !isValidEndTime(product.getEndTime())) {
+        // If client didn't provide an endTime, set a sensible default: next hour, on-the-hour
+        if (product.getEndTime() == null) {
+            LocalDateTime now = LocalDateTime.now();
+            // default to the next on-the-hour time (e.g., if it's 10:15 -> 11:00)
+            LocalDateTime defaultEnd = now.plusHours(1).withMinute(0).withSecond(0).withNano(0);
+            // LocalDateTime defaultEnd = now.plusMinutes(1);
+            product.setEndTime(defaultEnd);
+        }
+
+        if (!isValidEndTime(product.getEndTime())) {
             throw new IllegalArgumentException("endTime must be on the hour and in the future");
         }
+
         return productRepository.save(product);
     }
 
@@ -67,5 +77,10 @@ public class ProductService {
 
     public List<Product> getProductsBySeller(Integer sellerId) {
         return productRepository.findBySellerId(sellerId);
+    }
+
+    // convenience save method used by controllers/services when partial updates are needed
+    public Product saveProduct(Product product) {
+        return productRepository.save(product);
     }
 }
