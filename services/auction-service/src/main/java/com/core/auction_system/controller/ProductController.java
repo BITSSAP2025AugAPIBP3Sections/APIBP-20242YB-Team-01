@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +50,17 @@ public class ProductController {
     }
 
     /**
+     * GET /api/products/v1/category/{category}
+     */
+    @GetMapping("/category/{category}")
+    public List<Product> getProductsByCategory(@PathVariable String category) {
+        log.debug("GET /api/products/v1/category/{} called", category);
+        List<Product> products = productService.getProductsByCategory(category);
+        log.info("Found {} products for category '{}'", products.size(), category);
+        return products;
+    }
+
+    /**
      * POST /api/products/v1
      */
     @PostMapping
@@ -88,10 +100,10 @@ public class ProductController {
      * DELETE /api/products/v1/{id}
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Integer id) {
+    public ResponseEntity<?> deleteProduct(@PathVariable Integer id) {
         log.debug("DELETE /api/products/v1/{} called", id);
         productService.deleteProduct(id);
         log.info("Product deleted with id {}", id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(Map.of("message", "product deleted"));
     }
 }
