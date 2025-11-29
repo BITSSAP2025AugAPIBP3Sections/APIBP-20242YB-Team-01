@@ -112,10 +112,6 @@ Returns JSON response or base64-encoded Excel file
 
 ---
 
-
-
-
-
 ## API Endpoints
 
 > **Note:** This is the single source of truth for all API endpoints. For request/response schemas and more examples, see the Swagger UI for each service or the OpenAPI YAML files in `api-specs/`.

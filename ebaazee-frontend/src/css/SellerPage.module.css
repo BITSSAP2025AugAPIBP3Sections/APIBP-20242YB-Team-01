@@ -1,0 +1,110 @@
+.root {
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+  background: #f9fafb;
+  min-height: 100vh; /* full screen height */
+}
+
+.card {
+  width: 100%;
+  max-width: 600px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08); /* slightly stronger shadow */
+  padding: 36px 40px; /* more padding for spaciousness */
+  box-sizing: border-box;
+  transition: box-shadow 0.3s ease;
+  display: inline-block;
+  max-height: fit-content;
+}
+
+.card:hover {
+  box-shadow: 0 10px 28px rgba(0,0,0,0.12);
+}
+
+.heading {
+  margin: 0 0 28px;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #333;
+  text-align: center;
+  letter-spacing: 0.03em;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+}
+
+.field label {
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #555;
+  font-size: 1rem;
+  user-select: none;
+}
+
+.field input,
+.field select,
+.field textarea {
+  padding: 14px 16px;
+  border: 1.8px solid #d1d5db;
+  border-radius: 10px;
+  font-size: 1rem;
+  color: #333;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 8px rgba(59,130,246,0.4);
+}
+
+.fieldGroup {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.fieldGroup .field {
+  flex: 1 1 45%;
+  min-width: 180px;
+}
+
+.submitButton {
+  margin-top: 16px;
+  align-self: flex-end;
+  background: #3b82f6;
+  color: #fff;
+  padding: 14px 28px;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 5px 15px rgba(59,130,246,0.4);
+  transition: background 0.25s ease, box-shadow 0.25s ease;
+  user-select: none;
+}
+
+.submitButton:hover {
+  background: #2563eb;
+  box-shadow: 0 8px 22px rgba(37,99,235,0.6);
+}
+
+.submitButton:active {
+  background: #1e40af;
+  box-shadow: 0 4px 12px rgba(30,64,175,0.8);
+}

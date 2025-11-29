@@ -1,0 +1,160 @@
+/* src/css/ListingSection.module.css */
+.listingWrapper {
+    display: flex;
+    gap: 24px;
+    margin-top: 48px;
+  }
+  
+  /* Sidebar */
+  .sidebar {
+    width: 280px;
+    background: #fff;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    box-sizing: border-box;
+  }
+  .filterGroup {
+    margin-bottom: 24px;
+  }
+  .filterTitle {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .searchInput,
+  .filterSelect,
+  .rangeInput {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+  .checkboxItem {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .checkboxItem input {
+    margin-right: 8px;
+  }
+  
+  /* Content */
+  .listingContent {
+    flex: 1;
+  }
+  .listingHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+  .headerControls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .sortSelect {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  /* Grid */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 24px;
+  }
+  
+  /* Card */
+  .card {
+    position: relative;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    padding: 16px;
+    box-sizing: border-box;
+  }
+  .cardImage {
+    width: 100%;
+    height: 140px;
+    background: #f3f3f3;
+    border-radius: 4px;
+    margin-bottom: 12px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+  .badgeLive,
+  .badgeUpcoming {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    color: #fff;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+  }
+  .badgeLive {
+    background: #d32f2f;
+  }
+  .badgeUpcoming {
+    background: #1976d2;
+  }
+  .countdown {
+    display: flex;
+    justify-content: space-between;
+    background: rgba(255,255,255,0.9);
+    border-radius: 24px;
+    padding: 8px 12px;
+    position: absolute;
+    top: 100px;
+    left: 16px;
+    right: 16px;
+    font-size: 0.75rem;
+    color: #333;
+    margin: 0 auto;
+    box-sizing: border-box;
+  }
+  .countdown div {
+    text-align: center;
+  }
+  .cardTitle {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 12px 0 8px;
+  }
+  .currentBid {
+    font-size: 0.875rem;
+    margin-bottom: 12px;
+  }
+  .bidButton {
+    padding: 8px 16px;
+    background: #000;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .applyButton {
+    display: block;                
+    width: 100%;                  
+    padding: 12px 0;              
+    margin-top: 16px;              
+    background-color: #000;        
+    color: #fff;                   
+    border: none;                  
+    border-radius: 24px;           
+    font-size: 1rem;               
+    font-weight: 600;              
+    text-align: center;            
+    cursor: pointer;               
+    transition: background-color 0.2s ease;
+  }
+  .applyButton:hover {
+    background-color: #333;        
+  }
+  

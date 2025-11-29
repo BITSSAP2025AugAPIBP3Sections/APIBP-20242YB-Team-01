@@ -14,11 +14,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -67,6 +69,10 @@ public class AuthController {
      * @param request validated registration request containing user details
      * @return ResponseEntity with success message and HTTP 201 status
      */
+    @CrossOrigin(
+    origins = "http://localhost:5173",
+    methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.OPTIONS}
+)
     @PostMapping("/register")
     public ResponseEntity<Map<String, String>> register(@Valid @RequestBody RegisterRequest request) {
         log.info("Attempting registration for email={}", request.getEmail());
@@ -101,6 +107,10 @@ public class AuthController {
      * @param request validated login request containing email and password
      * @return ResponseEntity with LoginResponse containing access and refresh tokens
      */
+    @CrossOrigin(
+    origins = "http://localhost:5173",
+    methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.OPTIONS}
+)
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
         log.info("Login request for email={}", request.getEmail());

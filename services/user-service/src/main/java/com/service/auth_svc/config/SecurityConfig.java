@@ -55,7 +55,7 @@ public class SecurityConfig {
      * <p>This method defines the security rules for the application:</p>
      * <ul>
      *   <li>Disables CSRF protection (not needed for stateless JWT APIs)</li>
-     *   <li>Disables CORS (handled by API Gateway/Envoy)</li>
+     *   <li>Disables CORS (handled externally)</li>
      *   <li>Configures public endpoints (registration, login, OAuth2, Swagger)</li>
      *   <li>Sets session management to STATELESS</li>
      *   <li>Adds JWT authentication filter before Spring Security's default filter</li>
@@ -77,13 +77,14 @@ public class SecurityConfig {
                     csrf.disable();
                 })
                 .cors(cors -> {
-                    log.debug("Disabling CORS (handled externally)");
-                    cors.disable();
+                    log.debug("Enabling CORS to support frontend preflight requests");
                 })
                 .authorizeHttpRequests(auth -> {
                     log.debug("Configuring public and protected endpoints");
 
                     auth
+                            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()   // <-- ADDED
+
                             // Public endpoints: registration, login, token management
                             .requestMatchers(HttpMethod.POST, "/api/auth/v1/register", "/api/auth/v1/login",
                                     "/api/auth/v1/refresh-token", "/api/auth/v1/revoke")

@@ -1,0 +1,16 @@
+{
+    "sales": [
+        { "value": "all", "label": "All" },
+        { "value": "active", "label": "Active" },
+        { "value": "sold",   "label": "Sold"   },
+        { "value": "frozen", "label": "Frozen" }
+    ],
+    "salesType": [
+      "Upcoming",
+      "Latest",
+      "Highest Bidding",
+      "Live Auction",
+      "Popular"
+    ]
+  }
+  

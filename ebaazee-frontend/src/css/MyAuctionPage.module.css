@@ -1,0 +1,125 @@
+.root {
+  width: 100%;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.heading {
+  font-size: 2rem;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+/* Tab bar */
+.tabBar {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.tabButton {
+  background: #f0f0f0;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 24px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+
+.tabButton:hover {
+  background: #e0e0e0;
+}
+
+.tabButton.active {
+  background: #000;
+  color: #fff;
+}
+
+/* Cards grid */
+.cardsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 24px;
+}
+
+.emptyMessage {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: #555;
+}
+
+/* Card */
+.card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: fadeInUp 0.4s ease-out both;
+}
+
+/* Image & badge */
+.imageWrapper {
+  position: relative;
+}
+
+.cardImage {
+  width: 100%;
+  object-fit: cover;
+  display: block;
+  height: 160px;
+}
+
+.badgeLive {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: #d32f2f;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+
+/* Card body */
+.cardTitle {
+  margin: 16px;
+  font-size: 1.1rem;
+  flex-grow: 1;
+}
+
+.bidInfo {
+  margin: 0 16px 16px;
+  color: #555;
+}
+
+/* Action button */
+.bidButton {
+  margin: 0 16px 16px;
+  padding: 10px 0;
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: 24px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+.bidButton:hover {
+  background: #222;
+}
+
+/* fadeInUp animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

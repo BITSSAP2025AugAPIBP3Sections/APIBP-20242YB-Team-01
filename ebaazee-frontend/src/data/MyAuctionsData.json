@@ -1,0 +1,81 @@
+{
+    "inProgress": [
+      {
+        "id": "ip1",
+        "title": "Masterpiece Marketplace Art Auction Extra.",
+        "currentBid": 2898,
+        "image": "/assets/auctions/art1.jpg"
+      },
+      {
+        "id": "ip2",
+        "title": "Palette on Perfection Primer Art Auction Event.",
+        "currentBid": 4648,
+        "image": "/assets/auctions/art2.jpg"
+      },
+      {
+        "id": "ip3",
+        "title": "Canvas & Culture Brush with Elegance Auction.",
+        "currentBid": 5237,
+        "image": "/assets/auctions/art3.jpg"
+      },
+      {
+        "id": "ip4",
+        "title": "Titan Motors Built to Conquer Every Mile.",
+        "currentBid": 5820,
+        "image": "/assets/auctions/art4.jpg"
+      }
+    ],
+    "won": [
+      {
+        "id": "w1",
+        "title": "Brushed Brilliance Modernity Art Auction.",
+        "currentBid": 8974,
+        "image": "/assets/auctions/art5.jpg"
+      },
+      {
+        "id": "w2",
+        "title": "Vintage Valor Embracing the Elegance of Eras Past.",
+        "currentBid": 7500,
+        "image": "/assets/auctions/art6.jpg"
+      },
+      {
+        "id": "w3",
+        "title": "Royal Relics: A Curated Antique Showcase.",
+        "currentBid": 6230,
+        "image": "/assets/auctions/art7.jpg"
+      },
+      {
+        "id": "w4",
+        "title": "Sculpted Stories: Masterworks in Marble & Bronze.",
+        "currentBid": 9685,
+        "image": "/assets/auctions/art8.jpg"
+      }
+    ],
+    "closed": [
+      {
+        "id": "c1",
+        "title": "Artistry in Auction Celebrating Creative Excellence.",
+        "currentBid": 5237,
+        "image": "/assets/auctions/art9.jpg"
+      },
+      {
+        "id": "c2",
+        "title": "Antique Radio’s Resonant Echoes Through Time.",
+        "currentBid": 4120,
+        "image": "/assets/auctions/art10.jpg"
+      },
+      {
+        "id": "c3",
+        "title": "Rare Vase: A Porcelain Perfection Rarity.",
+        "currentBid": 5320,
+        "image": "/assets/auctions/art11.jpg"
+      },
+      {
+        "id": "c4",
+        "title": "Retro Lamp: Illuminating Mid-Century Modern Style.",
+        "currentBid": 3785,
+        "image": "/assets/auctions/art12.jpg"
+      }
+    ]
+  }
+  

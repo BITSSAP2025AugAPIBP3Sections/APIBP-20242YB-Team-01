@@ -1,0 +1,103 @@
+/* 1. Container holds sidebar + main content */
+.sidemenu {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  position: relative; /* for the profile button */
+}
+
+/* 2. Sidebar always 240px on desktop */
+.sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  background: #DBDBDB;
+  border-right: 1px solid #ddd;
+  overflow-y: auto;
+  transition: transform 0.3s ease;
+}
+
+/* 3. Main content fills rest */
+.content {
+  flex: 1;
+  overflow-y: auto;
+  background-color: #f5f5f5;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+/* 4. Profile-toggle button (bottom-left) */
+.profileToggle {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #fff;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  transition: transform 0.2s;
+}
+.profileToggle:hover {
+  transform: scale(1.1);
+}
+.avatar {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+/* 5. Desktop: menu always visible; ignore .open */
+@media (min-width: 769px) {
+  .sidebar {
+    transform: none !important;
+  }
+  .profileToggle {
+    display: none;
+  }
+}
+
+.logoutBtn {
+  margin-top: auto;           /* push to bottom of sidebar */
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 12px 16px;
+  font-size: 1rem;
+  text-align: left;
+  width: 100%;
+  transition: background 0.2s;
+}
+
+.logoutBtn:hover {
+  background: #f9f9f9;
+}
+
+
+/* 6. Mobile: hide sidebar by default, slide in when .open on .sidemenu */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    transform: translateX(-100%);
+    z-index: 150;
+  }
+  .sidemenu.open .sidebar {
+    transform: translateX(0);
+  }
+  /* dim background when menu open */
+  .sidemenu.open .content::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.2);
+    z-index: 140;
+  }
+}

@@ -1,0 +1,41 @@
+{
+    "items": [
+      {
+        "id": 1,
+        "title": "Zenith Auto Elevating Driving Experience",
+        "price": 2898,
+        "image": "/assets/auctions/car1.jpg"
+      },
+      {
+        "id": 2,
+        "title": "Heritage Curating Watch Time Treasures",
+        "price": 8974,
+        "image": "/assets/auctions/watch1.jpg"
+      },
+      {
+        "id": 3,
+        "title": "Vintage Valor Elegance of Eras Past",
+        "price": 3420,
+        "image": "/assets/auctions/vase1.jpg"
+      },
+      {
+        "id": 4,
+        "title": "Canvas & Culture Brush with Elegance",
+        "price": 8740,
+        "image": "/assets/auctions/art1.jpg"
+      },
+      {
+        "id": 5,
+        "title": "Nomism Nexus Connecting Collectors",
+        "price": 4648,
+        "image": "/assets/auctions/coin1.jpg"
+      },
+      {
+        "id": 6,
+        "title": "Titan Motors Conquer Every Mile",
+        "price": 10500,
+        "image": "/assets/auctions/car2.jpg"
+      }
+    ]
+  }
+  

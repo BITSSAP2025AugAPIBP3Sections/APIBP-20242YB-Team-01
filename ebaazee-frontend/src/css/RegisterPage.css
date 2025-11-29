@@ -1,0 +1,154 @@
+.register-container {
+  position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  
+    /* full-screen background */
+    background: url('/assets/abstract-bg.svg') no-repeat center/cover;
+}
+.register-container::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--overlay-bg);
+  z-index: 0;
+}
+
+/* ===== GLASS BACKGROUND IMAGE (optional) ===== */
+.glass-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.register-card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 400px;
+  padding: 2rem;
+  background: var(--glass-bg);
+  border-radius: var(--glass-radius);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  color: var(--text-light);
+  text-align: center;
+  animation: fadeIn 0.8s ease-out both;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.register-card h2 {
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-size: 1.6rem;
+}
+
+/* ===== FORM ===== */
+.form-group {
+  margin-bottom: 1rem;
+  text-align: left;
+}
+.form-group label {
+  display: block;
+  margin-bottom: 0.4rem;
+  color: var(--text-light-muted);
+  font-size: 0.9rem;
+}
+.form-group input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.2);
+  color: var(--text-light);
+  font-size: 1rem;
+  outline: none;
+  box-sizing: border-box;
+}
+
+/* ===== OPTIONS (remember me / forgot) ===== */
+.options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0.5rem 0 1.2rem;
+  font-size: 0.9rem;
+}
+.options a {
+  color: var(--text-light);
+  text-decoration: none;
+}
+.options a:hover {
+  text-decoration: underline;
+}
+
+/* ===== PRIMARY BUTTON ===== */
+.btn {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  background: var(--primary-color);
+  color: var(--text-light);
+  border-radius: 8px;
+  transition: background 0.3s ease;
+}
+.btn:hover {
+  background: var(--primary-hover);
+}
+
+/* ===== FOOTER LINK ===== */
+.footer {
+  margin-top: 1.4rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--text-light-muted);
+}
+.footer a {
+  color: var(--text-light);
+  text-decoration: none;
+}
+.footer a:hover {
+  text-decoration: underline;
+}
+
+/* ===== RESPONSIVE ADJUSTMENTS ===== */
+@media (max-width: 480px) {
+  .register-card {
+    padding: 1.5rem;
+  }
+  .register-card h2 {
+    font-size: 1.4rem;
+  }
+}
+
+/* ===== ROLE SELECTOR ===== */
+.role-group .role-options {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.role-options label {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  color: var(--text-light);
+}
+
+.role-options input {
+  margin-right: 0.5rem;
+  /* uses the browser’s native accent-color for the radio dot */
+  accent-color: var(--primary);
+}

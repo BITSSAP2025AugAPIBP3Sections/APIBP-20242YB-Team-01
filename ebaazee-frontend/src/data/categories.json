@@ -1,0 +1,11 @@
+{
+    "categories": [
+      { "id": 1, "name": "Automotive" },
+      { "id": 2, "name": "Antiques" },
+      { "id": 3, "name": "Digital Art" },
+      { "id": 4, "name": "Books & Comic" },
+      { "id": 5, "name": "Old Coin" },
+      { "id": 6, "name": "Gadget & Tech" }
+    ]
+}
+  
