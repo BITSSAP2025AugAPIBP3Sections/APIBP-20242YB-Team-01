@@ -77,11 +77,48 @@
   position: absolute;
   top: 12px;
   left: 12px;
-  background: #d32f2f;
+  background: #4caf50;
   color: #fff;
   padding: 4px 8px;
   border-radius: 4px;
   font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badgeOutbid {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: #ff9800;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badgeWon {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: #2196f3;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badgeClosed {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: #757575;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 
 /* Card body */

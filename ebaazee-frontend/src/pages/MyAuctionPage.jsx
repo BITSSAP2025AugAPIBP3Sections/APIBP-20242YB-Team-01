@@ -56,7 +56,8 @@ export default function MyAuctionsPage() {
     if (!token || !userId) return;
     setLoading(true);
 
-    fetch('http://localhost:9090/api/user/my-bids', {
+    // Use the bidding summary endpoint that provides comprehensive bid data
+    fetch(`http://localhost:8080/api/bids/v1/users/${userId}/summary`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
         .then(res => {
@@ -64,18 +65,25 @@ export default function MyAuctionsPage() {
           return res.json();
         })
         .then(async data => {
-          // Enrich each bid with a productImage
+          // Enrich each bid with a productImage from category data
           const enrichedBids = await Promise.all(
               data.map(async bid => {
                 try {
+                  // Fetch full product details to get the category
                   const res = await fetch(
-                      `http://localhost:9090/api/products/${bid.productId}`,
+                      `http://localhost8080/api/products/v1/${bid.productId}`,
                       { headers: { 'Authorization': `Bearer ${token}` } }
                   );
                   const product = await res.json();
                   const category = product.category?.toUpperCase() || "DEFAULT";
                   const productImage = categoryImageMap[category] || categoryImageMap["DEFAULT"];
-                  return { ...bid, productImage };
+                  // Combine bid summary with product details
+                  return { 
+                    ...bid, 
+                    productImage,
+                    frozen: product.frozen,
+                    sold: product.sold
+                  };
                 } catch (err) {
                   return { ...bid, productImage: categoryImageMap["DEFAULT"] };
                 }
@@ -89,25 +97,28 @@ export default function MyAuctionsPage() {
 
   const now = new Date();
 
-  // Classify based on bid.sold and bid.frozen (not isSold/isFrozen)
+  // Classify based on bid status from BiddingSummaryDTO
+  // Status can be: "Winning", "Outbid", "Lost", "Won"
   const classifyBids = (bids) => {
     if (!userId) {
       return { inProgress: [], won: [], closed: [], all: [] };
     }
     return {
-      inProgress: bids.filter(bid =>
-          !bid.sold &&            // not sold
-          !bid.frozen &&          // not frozen
-          bid.endTime &&
-          new Date(bid.endTime) > now
-      ),
-      won: bids.filter(bid =>
-          bid.sold
-      ),
-      closed: bids.filter(bid =>
-          !bid.sold &&            // not sold
-          bid.frozen              // but frozen (auction ended without sale)
-      ),
+      // In-progress: Active bids (Winning or Outbid) where auction hasn't ended
+      inProgress: bids.filter(bid => {
+        const isActive = bid.status === 'Winning' || bid.status === 'Outbid';
+        const notEnded = bid.endTime && new Date(bid.endTime) > now;
+        return isActive && notEnded;
+      }),
+      // Won: Bids with "Won" status or sold products where this user is winner
+      won: bids.filter(bid => bid.status === 'Won' || bid.sold),
+      // Closed: Bids that are "Lost" or auction ended without winning
+      closed: bids.filter(bid => {
+        const isLost = bid.status === 'Lost';
+        const isFrozen = bid.frozen && bid.status !== 'Won';
+        const hasEnded = bid.endTime && new Date(bid.endTime) <= now && bid.status !== 'Won';
+        return isLost || isFrozen || hasEnded;
+      }),
       all: bids
     };
   };
@@ -145,14 +156,17 @@ export default function MyAuctionsPage() {
                           alt={bid.productName || 'Product'}
                           className={styles.cardImage}
                       />
-                      {activeTab === 'inProgress' && (
-                          <span className={styles.badgeLive}>Active</span>
+                      {bid.status === 'Winning' && (
+                          <span className={styles.badgeLive}>Winning</span>
                       )}
-                      {activeTab === 'won' && (
+                      {bid.status === 'Outbid' && (
+                          <span className={styles.badgeOutbid}>Outbid</span>
+                      )}
+                      {bid.status === 'Won' && (
                           <span className={styles.badgeWon}>Won</span>
                       )}
-                      {activeTab === 'closed' && (
-                          <span className={styles.badgeClosed}>Closed</span>
+                      {bid.status === 'Lost' && (
+                          <span className={styles.badgeClosed}>Lost</span>
                       )}
                     </div>
                     <h3 className={styles.cardTitle}>{bid.productName || 'Unnamed Product'}</h3>
@@ -160,9 +174,16 @@ export default function MyAuctionsPage() {
                       Your Bid: <strong>${bid.amount?.toLocaleString()}</strong>
                     </div>
                     <div className={styles.bidInfo}>
-                      {/* Here we’re re‐showing your bid amount as “Current Bid” */}
-                      Current Bid: <strong>${bid.amount?.toLocaleString()}</strong>
+                      Status: <strong>{bid.status}</strong>
                     </div>
+                    {bid.endTime && (
+                        <div className={styles.bidInfo}>
+                          {new Date(bid.endTime) > now 
+                            ? `Ends: ${new Date(bid.endTime).toLocaleString()}`
+                            : `Ended: ${new Date(bid.endTime).toLocaleString()}`
+                          }
+                        </div>
+                    )}
                   </div>
               ))
           )}

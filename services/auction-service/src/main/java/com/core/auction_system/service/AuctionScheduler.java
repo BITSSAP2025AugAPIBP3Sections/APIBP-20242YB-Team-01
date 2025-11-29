@@ -32,7 +32,7 @@ public class AuctionScheduler {
     @Autowired
     private com.core.auction_system.client.PaymentClient paymentClient;
 
-    @Scheduled(cron = "0 0 * * * *")
+    @Scheduled(cron = "0 */5 * * * *")
     @Transactional
     public void closeExpiredAuctions() {
         LocalDateTime now = LocalDateTime.now();
