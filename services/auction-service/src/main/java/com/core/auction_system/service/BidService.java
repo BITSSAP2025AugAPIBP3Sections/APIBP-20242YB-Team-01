@@ -44,34 +44,26 @@ public class BidService {
         return bidRepository.findByBidderId(bidderId);
     }
 
-    public List<Bid> getBidsByProduct(Product product) {
-        return bidRepository.findByProduct(product);
+    public List<BidResponseDTO> getBidsByBidderAsDTO(Integer bidderId) {
+        return mapToBidResponseDTOList(bidRepository.findByBidderId(bidderId));
     }
 
     public List<Bid> getBidsByProductId(Integer productId) {
         return bidRepository.findByProductId(productId);
     }
 
+    public List<BidResponseDTO> getBidsByProductIdAsDTO(Integer productId) {
+        return mapToBidResponseDTOList(bidRepository.findByProductId(productId));
+    }
+
     public boolean hasUserBidOnProduct(Integer bidderId, Product product) {
         return bidRepository.existsByBidderIdAndProduct(bidderId, product);
-    }
-
-    public Optional<Bid> getHighestBid(Product product) {
-        return bidRepository.findTopByProductOrderByAmountDesc(product);
-    }
-
-    public long countBidsForProduct(Product product) {
-        return bidRepository.countByProduct(product);
-    }
-
-    public Double getAverageBidAmount(Product product) {
-        return bidRepository.findAverageBidAmountByProduct(product);
     }
 
     /**
      * Convert Bid entity to BidResponseDTO with just product ID
      */
-    public BidResponseDTO mapToBidResponseDTO(Bid bid) {
+    private BidResponseDTO mapToBidResponseDTO(Bid bid) {
         BidResponseDTO dto = new BidResponseDTO();
         dto.setId(bid.getId());
         dto.setAmount(bid.getAmount());
@@ -87,7 +79,7 @@ public class BidService {
     /**
      * Convert list of Bid entities to list of BidResponseDTOs
      */
-    public List<BidResponseDTO> mapToBidResponseDTOList(List<Bid> bids) {
+    private List<BidResponseDTO> mapToBidResponseDTOList(List<Bid> bids) {
         return bids.stream()
                 .map(this::mapToBidResponseDTO)
                 .collect(Collectors.toList());

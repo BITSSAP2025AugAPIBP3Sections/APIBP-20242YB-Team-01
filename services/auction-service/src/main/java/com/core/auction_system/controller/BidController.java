@@ -59,13 +59,10 @@ public class BidController {
      */
     @GetMapping("/users/{userId}")
     public ResponseEntity<List<BidResponseDTO>> getBidsByUser(@PathVariable Integer userId) {
-        logger.debug("GET /api/bids/v1/user/{} called", userId);
-        
-        List<Bid> userBids = bidService.getBidsByBidder(userId);
-        List<BidResponseDTO> response = bidService.mapToBidResponseDTOList(userBids);
-        
-        logger.info("Found {} bids for user {}", response.size(), userId);
-        return ResponseEntity.ok(response);
+        logger.debug("GET /api/bids/v1/users/{} called", userId);
+        List<BidResponseDTO> bids = bidService.getBidsByBidderAsDTO(userId);
+        logger.info("Found {} bids for user {}", bids.size(), userId);
+        return ResponseEntity.ok(bids);
     }
 
     /**
@@ -74,13 +71,10 @@ public class BidController {
      */
     @GetMapping("/products/{productId}")
     public ResponseEntity<List<BidResponseDTO>> getBidsByProduct(@PathVariable Integer productId) {
-        logger.debug("GET /api/bids/v1/product/{} called", productId);
-        
-        List<Bid> productBids = bidService.getBidsByProductId(productId);
-        List<BidResponseDTO> response = bidService.mapToBidResponseDTOList(productBids);
-        
-        logger.info("Found {} bids for product {}", response.size(), productId);
-        return ResponseEntity.ok(response);
+        logger.debug("GET /api/bids/v1/products/{} called", productId);
+        List<BidResponseDTO> bids = bidService.getBidsByProductIdAsDTO(productId);
+        logger.info("Found {} bids for product {}", bids.size(), productId);
+        return ResponseEntity.ok(bids);
     }
 
     /**

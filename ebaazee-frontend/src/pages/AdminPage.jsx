@@ -8,6 +8,8 @@ const AdminPage = () => {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState('');
 
   const token = localStorage.getItem('token');
 
@@ -25,9 +27,34 @@ const AdminPage = () => {
       const res = await axios.get('http://localhost:8080/api/categories/v1', {
         headers: { Authorization: `Bearer ${token}` },
       });
+      // API returns array of category objects with id and name
       setCategories(res.data);
     } catch (error) {
       console.error('Error fetching categories:', error);
+    }
+  };
+
+  const handleCreateCategory = async () => {
+    if (!newCategoryName.trim()) {
+      alert('Please enter a category name');
+      return;
+    }
+    
+    try {
+      await axios.post(
+        'http://localhost:8080/api/categories/v1',
+        { name: newCategoryName },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setNewCategoryName('');
+      setShowCategoryModal(false);
+      fetchCategories();
+      alert('Category created successfully!');
+    } catch (error) {
+      console.error('Error creating category:', error);
+      alert('Failed to create category. Please try again.');
     }
   };
 
@@ -53,6 +80,7 @@ const AdminPage = () => {
   const applyFilters = () => {
     let filtered = [...products];
     if (selectedCategory) {
+      // Filter by category name
       filtered = filtered.filter((p) => p.category === selectedCategory);
     }
     if (selectedStatus) {
@@ -80,24 +108,59 @@ const AdminPage = () => {
 
   const downloadReport = async () => {
     try {
-      const res = await axios.get(
-          'http://localhost:8080/api/admin/products/report',
+      console.log('Starting download report...');
+      const res = await axios.post(
+          'http://localhost:8080/api/analytics/graphql',
+          {
+            query: `query { downloadProductReport { filename base64Content } }`
+          },
           {
             headers: {
               Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
             },
-            responseType: 'blob',
           }
       );
-      const url = window.URL.createObjectURL(new Blob([res.data]));
+
+      console.log('Response:', res.data);
+
+      // Check if response has the expected structure
+      if (!res.data || !res.data.data || !res.data.data.downloadProductReport) {
+        throw new Error('Invalid response structure');
+      }
+
+      const { filename, base64Content } = res.data.data.downloadProductReport;
+      
+      console.log('Filename:', filename);
+      console.log('Base64 content length:', base64Content.length);
+      
+      // Convert base64 to blob
+      const byteCharacters = atob(base64Content);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      
+      console.log('Blob created, size:', blob.size);
+      
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', 'product_report.csv');
+      link.setAttribute('download', filename);
       document.body.appendChild(link);
       link.click();
       link.remove();
+      window.URL.revokeObjectURL(url);
+      
+      console.log('Download triggered successfully');
+      alert('Report downloaded successfully!');
     } catch (error) {
       console.error('Error downloading report:', error);
+      console.error('Error details:', error.response?.data);
+      alert(`Failed to download report: ${error.message || 'Please try again.'}`);
     }
   };
 
@@ -118,6 +181,9 @@ const AdminPage = () => {
         <header className={styles.adminHeader}>
           <h1>Admin Page</h1>
           <div className={styles.headerActions}>
+            <button className={`${styles.btn} ${styles.reportBtn}`} onClick={() => setShowCategoryModal(true)}>
+              Create Category
+            </button>
             <button className={`${styles.btn} ${styles.reportBtn}`} onClick={downloadReport}>
               Download Report
             </button>
@@ -137,8 +203,8 @@ const AdminPage = () => {
             >
               <option value="">All</option>
               {categories.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {cat.replace('_', ' ')}
+                  <option key={cat.id} value={cat.name}>
+                    {cat.name}
                   </option>
               ))}
             </select>
@@ -219,6 +285,39 @@ const AdminPage = () => {
           )}
           </tbody>
         </table>
+
+        {/* Create Category Modal */}
+        {showCategoryModal && (
+          <div className={styles.modal}>
+            <div className={styles.modalContent}>
+              <h2>Create New Category</h2>
+              <input
+                type="text"
+                placeholder="Enter category name"
+                value={newCategoryName}
+                onChange={(e) => setNewCategoryName(e.target.value)}
+                className={styles.categoryInput}
+              />
+              <div className={styles.modalActions}>
+                <button
+                  className={`${styles.btn} ${styles.createBtn}`}
+                  onClick={handleCreateCategory}
+                >
+                  Create
+                </button>
+                <button
+                  className={`${styles.btn} ${styles.cancelBtn}`}
+                  onClick={() => {
+                    setShowCategoryModal(false);
+                    setNewCategoryName('');
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
   );
 };
