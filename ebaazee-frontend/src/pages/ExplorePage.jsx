@@ -40,24 +40,24 @@ function CountdownTimer({ endTime }) {
   }, [endTime]);
 
   return (
-      <>
-        <div className={styles.timeSegment}>
-          <span>{String(timeLeft.days).padStart(2, "0")}</span>
-          <small>Days</small>
-        </div>
-        <div className={styles.timeSegment}>
-          <span>{String(timeLeft.hours).padStart(2, "0")}</span>
-          <small>Hours</small>
-        </div>
-        <div className={styles.timeSegment}>
-          <span>{String(timeLeft.min).padStart(2, "0")}</span>
-          <small>Min</small>
-        </div>
-        <div className={styles.timeSegment}>
-          <span>{String(timeLeft.sec).padStart(2, "0")}</span>
-          <small>Sec</small>
-        </div>
-      </>
+    <>
+      <div className={styles.timeSegment}>
+        <span>{String(timeLeft.days).padStart(2, "0")}</span>
+        <small>Days</small>
+      </div>
+      <div className={styles.timeSegment}>
+        <span>{String(timeLeft.hours).padStart(2, "0")}</span>
+        <small>Hours</small>
+      </div>
+      <div className={styles.timeSegment}>
+        <span>{String(timeLeft.min).padStart(2, "0")}</span>
+        <small>Min</small>
+      </div>
+      <div className={styles.timeSegment}>
+        <span>{String(timeLeft.sec).padStart(2, "0")}</span>
+        <small>Sec</small>
+      </div>
+    </>
   );
 }
 
@@ -133,7 +133,7 @@ export default function ExplorePage() {
     DEFAULT: defaultImg,
   };
   const getCategoryImage = (cat) =>
-      categoryImageMap[cat.toUpperCase()] || categoryImageMap.DEFAULT;
+    categoryImageMap[cat.toUpperCase()] || categoryImageMap.DEFAULT;
 
   // ─── Fetch User Profile on mount ────────────────────────────────────
   useEffect(() => {
@@ -143,77 +143,77 @@ export default function ExplorePage() {
     fetch(`http://localhost:8080/api/auth/v1/users/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
-        .then((res) => {
-          if (!res.ok) throw new Error("Unauthorized");
-          console.log(res);
-          return res.json();
-        })
-        .then((data) => {
-          console.log(data);
-          setFirstName(data.fullName);
-        })
-        .catch((err) => {
-          console.error("Error fetching profile:", err);
-        });
+      .then((res) => {
+        if (!res.ok) throw new Error("Unauthorized");
+        console.log(res);
+        return res.json();
+      })
+      .then((data) => {
+        console.log(data);
+        setFirstName(data.fullName);
+      })
+      .catch((err) => {
+        console.error("Error fetching profile:", err);
+      });
   }, []);
 
   // ─── Fetch categories (prepend “All”) ───────────────────────────────
   useEffect(() => {
-  const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
 
-  fetch("http://localhost:8080/api/categories/v1", {
-    headers: { Authorization: `Bearer ${token}` },
-  })
-    .then((res) => {
-      if (!res.ok) throw new Error("Unauthorized");
-      return res.json();
+    fetch("http://localhost:8080/api/categories/v1", {
+      headers: { Authorization: `Bearer ${token}` },
     })
-    .then((data) => {
-      const mapped = data.map((cat) => ({
-        value: cat.name,   // <-- NEW (use name from object)
-        label: cat.name.charAt(0).toUpperCase() + cat.name.slice(1).toLowerCase(),
-        image: getCategoryImage(cat.name),   // <-- NEW (pass name)
-      }));
+      .then((res) => {
+        if (!res.ok) throw new Error("Unauthorized");
+        return res.json();
+      })
+      .then((data) => {
+        const mapped = data.map((cat) => ({
+          value: cat.name,   // <-- NEW (use name from object)
+          label: cat.name.charAt(0).toUpperCase() + cat.name.slice(1).toLowerCase(),
+          image: getCategoryImage(cat.name),   // <-- NEW (pass name)
+        }));
 
-      setCategories([
-        {
-          value: "ALL",
-          label: "All",
-          image: getCategoryImage("DEFAULT"),
-        },
-        ...mapped,
-      ]);
+        setCategories([
+          {
+            value: "ALL",
+            label: "All",
+            image: getCategoryImage("DEFAULT"),
+          },
+          ...mapped,
+        ]);
 
-      setActiveCategory("ALL");
-    })
-    .catch((err) => console.error("Error fetching categories:", err));
-}, []);
+        setActiveCategory("ALL");
+      })
+      .catch((err) => console.error("Error fetching categories:", err));
+  }, []);
 
 
   // ─── Fetch products (filtered by category) ──────────────────────────
   useEffect(() => {
     const token = localStorage.getItem("token");
     const url =
-        activeCategory && activeCategory !== "ALL"
-            ? `http://localhost:8080/api/products/v1/category/${activeCategory}`
-            : `http://localhost:8080/api/products/v1`;
+      activeCategory && activeCategory !== "ALL"
+        ? `http://localhost:8080/api/products/v1/category/${activeCategory}`
+        : `http://localhost:8080/api/products/v1`;
 
     fetch(url, {
       headers: { Authorization: `Bearer ${token}` },
     })
-        .then((res) => {
-          if (!res.ok) throw new Error("Unauthorized");
-          return res.json();
-        })
-        .then((data) => {
-          const mapped = data.map((item) => ({
-            ...item,
-            productId: item.productId || item.id,
-            productName: item.productName || item.name || "Unnamed",
-          }));
-          setListings(mapped);
-        })
-        .catch((err) => console.error("Error fetching products:", err));
+      .then((res) => {
+        if (!res.ok) throw new Error("Unauthorized");
+        return res.json();
+      })
+      .then((data) => {
+        const mapped = data.map((item) => ({
+          ...item,
+          productId: item.productId || item.id,
+          productName: item.productName || item.name || "Unnamed",
+        }));
+        setListings(mapped);
+      })
+      .catch((err) => console.error("Error fetching products:", err));
   }, [activeCategory]);
 
   // ─── Main carousel scroll effect ───────────────────────────────────
@@ -230,7 +230,7 @@ export default function ExplorePage() {
   }, [current]);
   const prev = () => setCurrent((i) => Math.max(0, i - 1));
   const next = () =>
-      setCurrent((i) => Math.min(carouselItems.length - 1, i + 1));
+    setCurrent((i) => Math.min(carouselItems.length - 1, i + 1));
 
   // ─── Category carousel scroll (on click) ──────────────────────────
   const scrollToCategory = (i) => {
@@ -249,17 +249,17 @@ export default function ExplorePage() {
     }
   };
   const prevCat = () =>
-      setCatIndex((i) => {
-        const ni = Math.max(0, i - 1);
-        scrollToCategory(ni);
-        return ni;
-      });
+    setCatIndex((i) => {
+      const ni = Math.max(0, i - 1);
+      scrollToCategory(ni);
+      return ni;
+    });
   const nextCat = () =>
-      setCatIndex((i) => {
-        const ni = Math.min(categories.length - 1, i + 1);
-        scrollToCategory(ni);
-        return ni;
-      });
+    setCatIndex((i) => {
+      const ni = Math.min(categories.length - 1, i + 1);
+      scrollToCategory(ni);
+      return ni;
+    });
 
   // ─── Modal open/close ───────────────────────────────────────────────
   const openBidModal = (product) => {
@@ -304,67 +304,67 @@ export default function ExplorePage() {
   //   }
   // };
   const fetchBidStatus = async (productId) => {
-  const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
 
-  try {
-    const res = await fetch(
-      `http://localhost:8080/api/bids/v1/products/${productId}`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
+    try {
+      const res = await fetch(
+        `http://localhost:8080/api/bids/v1/products/${productId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (!res.ok) {
+        throw new Error("Failed to fetch bid status");
       }
-    );
 
-    if (!res.ok) {
-      throw new Error("Failed to fetch bid status");
+      const bids = await res.json();
+
+      // decode user ID from token
+      // const user = jwtDecode(token);
+      const userId = localStorage.getItem("id");
+
+      // total bidders
+      const totalBidders = bids.length;
+
+      // max bid
+      const maxBidAmount =
+        bids.length > 0
+          ? Math.max(...bids.map((b) => b.amount))
+          : 0;
+
+      // average bid
+      const averageBidAmount =
+        bids.length > 0
+          ? bids.reduce((sum, b) => sum + b.amount, 0) / bids.length
+          : 0;
+
+      // check if user has bid
+      const userBid = bids.find((b) => b.bidderId === userId);
+
+      const hasUserBid = !!userBid;
+      const userBidAmount = userBid ? userBid.amount : 0;
+
+      // set state
+      setBidStatus({
+        totalBidders,
+        averageBidAmount,
+        maxBidAmount,
+        hasUserBid,
+        userBidAmount,
+      });
+
+    } catch (err) {
+      console.error("Error fetching bid status:", err);
+      setBidStatus({
+        totalBidders: 0,
+        averageBidAmount: 0,
+        maxBidAmount: 0,
+        hasUserBid: false,
+        userBidAmount: 0,
+      });
     }
-
-    const bids = await res.json();
-
-    // decode user ID from token
-    // const user = jwtDecode(token);
-    const userId = localStorage.getItem("id");
-
-    // total bidders
-    const totalBidders = bids.length;
-
-    // max bid
-    const maxBidAmount =
-      bids.length > 0
-        ? Math.max(...bids.map((b) => b.amount))
-        : 0;
-
-    // average bid
-    const averageBidAmount =
-      bids.length > 0
-        ? bids.reduce((sum, b) => sum + b.amount, 0) / bids.length
-        : 0;
-
-    // check if user has bid
-    const userBid = bids.find((b) => b.bidderId === userId);
-
-    const hasUserBid = !!userBid;
-    const userBidAmount = userBid ? userBid.amount : 0;
-
-    // set state
-    setBidStatus({
-      totalBidders,
-      averageBidAmount,
-      maxBidAmount,
-      hasUserBid,
-      userBidAmount,
-    });
-
-  } catch (err) {
-    console.error("Error fetching bid status:", err);
-    setBidStatus({
-      totalBidders: 0,
-      averageBidAmount: 0,
-      maxBidAmount: 0,
-      hasUserBid: false,
-      userBidAmount: 0,
-    });
-  }
-};
+  };
 
 
   const handleProceedToPayment = async () => {
@@ -377,55 +377,55 @@ export default function ExplorePage() {
     }
     if (amt < selectedProduct.minBid || amt > selectedProduct.maxBid) {
       setFeedback(
-          `⚠️ Bid must be between $${selectedProduct.minBid} and $${selectedProduct.maxBid}.`
+        `⚠️ Bid must be between $${selectedProduct.minBid} and $${selectedProduct.maxBid}.`
       );
       return;
     }
 
     const token = localStorage.getItem("token");
     try {
-  const token = localStorage.getItem("token");
+      const token = localStorage.getItem("token");
 
-  // const user = jwtDecode(token);
-    const userId = localStorage.getItem("id");
+      // const user = jwtDecode(token);
+      const userId = localStorage.getItem("id");
 
-  const bidsRes = await fetch(
-    `http://localhost:8080/api/bids/v1/products/${selectedProduct.productId}`,
-    {
-      headers: { Authorization: `Bearer ${token}` },
+      const bidsRes = await fetch(
+        `http://localhost:8080/api/bids/v1/products/${selectedProduct.productId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (!bidsRes.ok) {
+        throw new Error("Failed to fetch bids");
+      }
+
+      const bids = await bidsRes.json();
+
+      // check if this user has already placed a bid
+      const alreadyBid = bids.some(bid => bid.bidderId === userId);
+
+      if (alreadyBid) {
+        alert("⚠️ You have already placed a bid on this product.");
+        closeBidModal();
+        return;
+      }
+
+      // continue to payment page
+      localStorage.setItem(
+        "pendingBid",
+        JSON.stringify({
+          productId: selectedProduct.productId,
+          bidAmount: amt,
+        })
+      );
+      setModalOpen(false);
+      setSection("payment");
+
+    } catch (err) {
+      console.error("Error checking bid:", err);
+      setFeedback("⚠️ Unable to verify bid status. Please try again.");
     }
-  );
-
-  if (!bidsRes.ok) {
-    throw new Error("Failed to fetch bids");
-  }
-
-  const bids = await bidsRes.json();
-
-  // check if this user has already placed a bid
-  const alreadyBid = bids.some(bid => bid.bidderId === userId);
-
-  if (alreadyBid) {
-    alert("⚠️ You have already placed a bid on this product.");
-    closeBidModal();
-    return;
-  }
-
-  // continue to payment page
-  localStorage.setItem(
-    "pendingBid",
-    JSON.stringify({
-      productId: selectedProduct.productId,
-      bidAmount: amt,
-    })
-  );
-  setModalOpen(false);
-  setSection("payment");
-
-} catch (err) {
-  console.error("Error checking bid:", err);
-  setFeedback("⚠️ Unable to verify bid status. Please try again.");
-}
 
   };
 
@@ -440,11 +440,11 @@ export default function ExplorePage() {
   // ─── Apply filters (status, category, search) ──────────────────────
   const filteredListings = listings.filter((item) => {
     const statusMatch =
-        sales.toLowerCase() === "all" ? true : getStatus(item) === sales.toLowerCase();
+      sales.toLowerCase() === "all" ? true : getStatus(item) === sales.toLowerCase();
     const categoryMatch = activeCategory === "ALL" ? true : item.category === activeCategory;
     const searchMatch =
-        !searchText ||
-        item.productName.toLowerCase().includes(searchText.toLowerCase());
+      !searchText ||
+      item.productName.toLowerCase().includes(searchText.toLowerCase());
     return statusMatch && categoryMatch && searchMatch;
   });
 
@@ -454,276 +454,269 @@ export default function ExplorePage() {
   };
 
   return (
-      <div className={styles.root}>
-        {/* ─── 1. Top Bar ────────────────────────────────────────────────── */}
-        <div className={styles.topBar}>
-          <div className={styles.search}>
-            <input
-                type="text"
-                value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
-                placeholder="Search Products"
-                className={styles.searchInput}
-            />
-          </div>
-
-          {/* 👋 “Hi, FirstName” with styled background */}
-          <div className={styles.greeting}>
-            Hi, <span className={styles.username}>{firstName || "User"}</span>
-          </div>
+    <div className={styles.root}>
+      {/* ─── 1. Top Bar ────────────────────────────────────────────────── */}
+      <div className={styles.topBar}>
+        <div className={styles.search}>
+          <input
+            type="text"
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            placeholder="Search Products"
+            className={styles.searchInput}
+          />
         </div>
 
-        {/* ─── 2. Main Carousel ───────────────────────────────────────────── */}
-        <div className={styles.carouselWrapper}>
-          <div className={styles.carouselScroll} ref={scrollRef}>
-            {carouselItems.map((item) => (
-                <div key={item.id} className={styles.carouselSlide}>
-                  <div className={styles.carouselContent}>
-                    <h2 className={styles.carouselTitle}>{item.title}</h2>
-                    <p className={styles.carouselText}>{item.text}</p>
-                    <button className={styles.carouselButton}>
-                      {item.buttonText}
-                    </button>
-                  </div>
-                  <div className={styles.imagesStack}>
-                    <div className={styles.imagesStackItem} />
-                    <div className={styles.imagesStackItem} />
-                    <div className={styles.imagesStackItem} />
-                  </div>
-                </div>
-            ))}
-          </div>
-          <div className={styles.carouselArrows}>
-            <button
-                onClick={prev}
-                className={styles.arrowButton}
-                disabled={current === 0}
-            >
-              ‹
-            </button>
-            <button
-                onClick={next}
-                className={styles.arrowButton}
-                disabled={current === carouselItems.length - 1}
-            >
-              ›
-            </button>
-          </div>
-          <div className={styles.carouselDots}>
-            {carouselItems.map((_, i) => (
-                <div
-                    key={i}
-                    onClick={() => setCurrent(i)}
-                    className={i === current ? styles.dotActive : styles.dot}
-                />
-            ))}
-          </div>
+        {/* 👋 “Hi, FirstName” with styled background */}
+        <div className={styles.greeting}>
+          Hi, <span className={styles.username}>{firstName || "User"}</span>
         </div>
+      </div>
 
-        {/* ─── 3. Top Categories Carousel ────────────────────────────────── */}
-        <section className={styles.categorySection}>
-          <h2 className={styles.categoryHeading}>Top Categories</h2>
-          <div className={styles.categoryCarouselWrapper}>
-            <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  prevCat();
-                }}
-                disabled={catIndex === 0}
-                className={`${styles.carouselArrow} ${styles.carouselArrowLeft}`}
-            >
-              ‹
-            </button>
-            <div className={styles.categoryCarousel} ref={catRef}>
-              {categories.map((cat) => (
-                  <div
-                      key={cat.value}
-                      className={`${styles.categoryCard} ${
-                          activeCategory === cat.value ? styles.active : ""
-                      }`}
-                      onClick={() => setActiveCategory(cat.value)}
-                  >
-                    <div className={styles.categoryImageWrapper}>
-                      <img
-                          src={cat.image}
-                          alt={cat.label}
-                          className={styles.categoryImage}
-                      />
-                    </div>
-                    <span className={styles.categoryLabel}>{cat.label}</span>
-                  </div>
-              ))}
-            </div>
-            <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  nextCat();
-                }}
-                disabled={catIndex === categories.length - 1}
-                className={`${styles.carouselArrow} ${styles.carouselArrowRight}`}
-            >
-              ›
-            </button>
-          </div>
-        </section>
-
-        {/* ─── 4. Listing Section ─────────────────────────────────────────── */}
-        <div className={listStyles.listingWrapper}>
-          {/* Sidebar Filters */}
-          <aside className={listStyles.sidebar}>
-            {/* Status Filter */}
-            <div className={listStyles.filterGroup}>
-              <label className={listStyles.filterTitle}>Status</label>
-              <select
-                  value={sales}
-                  onChange={(e) => setSales(e.target.value)}
-                  className={listStyles.filterSelect}
-              >
-                {filterOptions.sales.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Category Filter */}
-            <div className={listStyles.filterGroup}>
-              <label className={listStyles.filterTitle}>Category</label>
-              <select
-                  value={activeCategory}
-                  onChange={(e) => setActiveCategory(e.target.value)}
-                  className={listStyles.filterSelect}
-              >
-                {categories.map((cat) => (
-                    <option key={cat.value} value={cat.value}>
-                      {cat.label}
-                    </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Reset Button */}
-            <button className={listStyles.applyButton} onClick={resetFilters}>
-              Reset
-            </button>
-          </aside>
-
-          {/* Results Grid */}
-          <section className={listStyles.listingContent}>
-            <div className={listStyles.listingHeader}>
-              <div>
-                Showing 1–{filteredListings.length} of {filteredListings.length} Results
+      {/* ─── 2. Main Carousel ───────────────────────────────────────────── */}
+      <div className={styles.carouselWrapper}>
+        <div className={styles.carouselScroll} ref={scrollRef}>
+          {carouselItems.map((item) => (
+            <div key={item.id} className={styles.carouselSlide}>
+              <div className={styles.carouselContent}>
+                <h2 className={styles.carouselTitle}>{item.title}</h2>
+                <p className={styles.carouselText}>{item.text}</p>
+                <button className={styles.carouselButton}>
+                  {item.buttonText}
+                </button>
               </div>
             </div>
-            <div className={listStyles.grid}>
-              {filteredListings.map((item) => (
-                  <div key={item.productId} className={listStyles.card}>
-                    <div
-                        className={listStyles.cardImage}
-                        style={{
-                          backgroundImage: `url(${
-                              categories.find((c) => c.value === item.category)?.image ||
-                              "/images/default.png"
-                          })`,
-                        }}
-                    />
-                    <div
-                        className={
-                          getStatus(item) === "active"
-                              ? listStyles.badgeLive
-                              : listStyles.badgeUpcoming
-                        }
-                    >
-                      {getStatus(item).toUpperCase()}
-                    </div>
-                    <div className={listStyles.countdown}>
-                      {item.endTime ? (
-                          <CountdownTimer endTime={item.endTime} />
-                      ) : (
-                          ["Days", "Hours", "Min", "Sec"].map((label) => (
-                              <div key={label} className={styles.timeSegment}>
-                                <span>00</span>
-                                <small>{label}</small>
-                              </div>
-                          ))
-                      )}
-                    </div>
-                    <h3 className={listStyles.cardTitle}>{item.productName}</h3>
-                    <div className={listStyles.currentBid}>
-                      Current Bid at: <strong>${item.currentBid}</strong>
-                    </div>
-                    <button
-                        className={listStyles.bidButton}
-                        onClick={() => openBidModal(item)}
-                        disabled={getStatus(item) !== "active"}
-                    >
-                      {getStatus(item) === "active" ? "Bid Now" : "Notify Me"}
-                    </button>
-                  </div>
-              ))}
-            </div>
-          </section>
+          ))}
         </div>
+        <div className={styles.carouselArrows}>
+          <button
+            onClick={prev}
+            className={styles.arrowButton}
+            disabled={current === 0}
+          >
+            ‹
+          </button>
+          <button
+            onClick={next}
+            className={styles.arrowButton}
+            disabled={current === carouselItems.length - 1}
+          >
+            ›
+          </button>
+        </div>
+        <div className={styles.carouselDots}>
+          {carouselItems.map((_, i) => (
+            <div
+              key={i}
+              onClick={() => setCurrent(i)}
+              className={i === current ? styles.dotActive : styles.dot}
+            />
+          ))}
+        </div>
+      </div>
 
-        {/* ─── 5. Bid Modal ─────────────────────────────────────────────────── */}
-        {modalOpen && selectedProduct && (
-            <div className={styles.modalOverlay} onClick={closeBidModal}>
-              <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-                <h2>Place a Bid</h2>
-                <p>
-                  <strong>Item:</strong> {selectedProduct.productName}
-                </p>
-                <p className={styles.modalDescription}>
-                  <strong>Description:</strong>{" "}
-                  {selectedProduct.description || "No description available."}
-                </p>
-
-                <p>
-                  <strong>Current Bid:</strong> ${selectedProduct.currentBid}
-                </p>
-                <p>
-                  <strong>Average Bid:</strong> ${bidStatus.averageBidAmount.toFixed(2)}
-                </p>
-                <p>
-                  <strong>Number of Bidders:</strong> {bidStatus.totalBidders}
-                </p>
-                <p>
-                  <strong>Allowed Range:</strong> ${selectedProduct.minBid} – $
-                  {selectedProduct.maxBid}
-                </p>
-
-                <div className={styles.formGroup}>
-                  <label htmlFor="bidAmount">Your Bid</label>
-                  <input
-                      id="bidAmount"
-                      type="number"
-                      value={bidAmount}
-                      onChange={(e) => setBidAmount(e.target.value)}
-                      placeholder="Enter higher than current bid"
+      {/* ─── 3. Top Categories Carousel ────────────────────────────────── */}
+      <section className={styles.categorySection}>
+        <h2 className={styles.categoryHeading}>Top Categories</h2>
+        <div className={styles.categoryCarouselWrapper}>
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              prevCat();
+            }}
+            disabled={catIndex === 0}
+            className={`${styles.carouselArrow} ${styles.carouselArrowLeft}`}
+          >
+            ‹
+          </button>
+          <div className={styles.categoryCarousel} ref={catRef}>
+            {categories.map((cat) => (
+              <div
+                key={cat.value}
+                className={`${styles.categoryCard} ${activeCategory === cat.value ? styles.active : ""
+                  }`}
+                onClick={() => setActiveCategory(cat.value)}
+              >
+                <div className={styles.categoryImageWrapper}>
+                  <img
+                    src={cat.image}
+                    alt={cat.label}
+                    className={styles.categoryImage}
                   />
                 </div>
-
-                {feedback && (
-                    <div
-                        className={
-                          feedback.startsWith("✅")
-                              ? styles.successMsg
-                              : styles.errorMsg
-                        }
-                    >
-                      {feedback}
-                    </div>
-                )}
-
-                <div className={styles.modalActions}>
-                  <button onClick={handleProceedToPayment} className="btn">
-                    Proceed to Payment
-                  </button>
-                </div>
+                <span className={styles.categoryLabel}>{cat.label}</span>
               </div>
+            ))}
+          </div>
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              nextCat();
+            }}
+            disabled={catIndex === categories.length - 1}
+            className={`${styles.carouselArrow} ${styles.carouselArrowRight}`}
+          >
+            ›
+          </button>
+        </div>
+      </section>
+
+      {/* ─── 4. Listing Section ─────────────────────────────────────────── */}
+      <div className={listStyles.listingWrapper}>
+        {/* Sidebar Filters */}
+        <aside className={listStyles.sidebar}>
+          {/* Status Filter */}
+          <div className={listStyles.filterGroup}>
+            <label className={listStyles.filterTitle}>Status</label>
+            <select
+              value={sales}
+              onChange={(e) => setSales(e.target.value)}
+              className={listStyles.filterSelect}
+            >
+              {filterOptions.sales.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Category Filter */}
+          <div className={listStyles.filterGroup}>
+            <label className={listStyles.filterTitle}>Category</label>
+            <select
+              value={activeCategory}
+              onChange={(e) => setActiveCategory(e.target.value)}
+              className={listStyles.filterSelect}
+            >
+              {categories.map((cat) => (
+                <option key={cat.value} value={cat.value}>
+                  {cat.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Reset Button */}
+          <button className={listStyles.applyButton} onClick={resetFilters}>
+            Reset
+          </button>
+        </aside>
+
+        {/* Results Grid */}
+        <section className={listStyles.listingContent}>
+          <div className={listStyles.listingHeader}>
+            <div>
+              Showing 1–{filteredListings.length} of {filteredListings.length} Results
             </div>
-        )}
+          </div>
+          <div className={listStyles.grid}>
+            {filteredListings.map((item) => (
+              <div key={item.productId} className={listStyles.card}>
+                <div
+                  className={listStyles.cardImage}
+                  style={{
+                    backgroundImage: `url(${categories.find((c) => c.value === item.category)?.image ||
+                      "/images/default.png"
+                      })`,
+                  }}
+                />
+                <div
+                  className={
+                    getStatus(item) === "active"
+                      ? listStyles.badgeLive
+                      : listStyles.badgeUpcoming
+                  }
+                >
+                  {getStatus(item).toUpperCase()}
+                </div>
+                <div className={listStyles.countdown}>
+                  {item.endTime ? (
+                    <CountdownTimer endTime={item.endTime} />
+                  ) : (
+                    ["Days", "Hours", "Min", "Sec"].map((label) => (
+                      <div key={label} className={styles.timeSegment}>
+                        <span>00</span>
+                        <small>{label}</small>
+                      </div>
+                    ))
+                  )}
+                </div>
+                <h3 className={listStyles.cardTitle}>{item.productName}</h3>
+                <div className={listStyles.currentBid}>
+                  Current Bid at: <strong>${item.currentBid}</strong>
+                </div>
+                <button
+                  className={listStyles.bidButton}
+                  onClick={() => openBidModal(item)}
+                  disabled={getStatus(item) !== "active"}
+                >
+                  {getStatus(item) === "active" ? "Bid Now" : "Notify Me"}
+                </button>
+              </div>
+            ))}
+          </div>
+        </section>
       </div>
+
+      {/* ─── 5. Bid Modal ─────────────────────────────────────────────────── */}
+      {modalOpen && selectedProduct && (
+        <div className={styles.modalOverlay} onClick={closeBidModal}>
+          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+            <h2>Place a Bid</h2>
+            <p>
+              <strong>Item:</strong> {selectedProduct.productName}
+            </p>
+            <p className={styles.modalDescription}>
+              <strong>Description:</strong>{" "}
+              {selectedProduct.description || "No description available."}
+            </p>
+
+            <p>
+              <strong>Current Bid:</strong> ${selectedProduct.currentBid}
+            </p>
+            <p>
+              <strong>Average Bid:</strong> ${bidStatus.averageBidAmount.toFixed(2)}
+            </p>
+            <p>
+              <strong>Number of Bidders:</strong> {bidStatus.totalBidders}
+            </p>
+            <p>
+              <strong>Allowed Range:</strong> ${selectedProduct.minBid} – $
+              {selectedProduct.maxBid}
+            </p>
+
+            <div className={styles.formGroup}>
+              <label htmlFor="bidAmount">Your Bid</label>
+              <input
+                id="bidAmount"
+                type="number"
+                value={bidAmount}
+                onChange={(e) => setBidAmount(e.target.value)}
+                placeholder="Enter higher than current bid"
+              />
+            </div>
+
+            {feedback && (
+              <div
+                className={
+                  feedback.startsWith("✅")
+                    ? styles.successMsg
+                    : styles.errorMsg
+                }
+              >
+                {feedback}
+              </div>
+            )}
+
+            <div className={styles.modalActions}>
+              <button onClick={handleProceedToPayment} className="btn">
+                Proceed to Payment
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

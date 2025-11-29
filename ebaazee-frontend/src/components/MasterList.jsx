@@ -12,7 +12,6 @@ export default function MasterList({ selectedSection, onSelectSection }) {
     const userItems = [
         { key: 'dashboard',    label: 'Dashboard' },
         { key: 'myauction',    label: 'My Auction' },
-        { key: 'settings',     label: 'Settings' },
         { key: 'helpandsupport', label: 'Help and Support' },
     ];
 

@@ -23,8 +23,6 @@ export default function SideMenu() {
         return <MyAuctionPage />;
       case "payment":
         return <PaymentPage />;       // ← Re-added so setSection("payment") works
-      case "settings":
-        return <SettingsPage />;
       case "helpandsupport":
         return <HelpAndSupportPage />;
       default:
