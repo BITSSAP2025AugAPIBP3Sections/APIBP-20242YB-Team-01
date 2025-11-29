@@ -115,20 +115,24 @@ Returns JSON response or base64-encoded Excel file
 
 
 
-### User Service Endpoints
+
+## API Endpoints
+
+> **Note:** This is the single source of truth for all API endpoints. For request/response schemas and more examples, see the Swagger UI for each service or the OpenAPI YAML files in `api-specs/`.
+
+### User Service (`/api/auth/v1`)
 
 > **Note:** For full API details, request/response schemas, and more examples, see the [Swagger UI for User Service](http://localhost:8081/swagger-ui.html).
-
-| Endpoint | Method | Description | Auth Required | Role |
-|----------|--------|-------------|---------------|------|
-| `/api/auth/v1/register` | POST | Register new user account | No | - |
-| `/api/auth/v1/login` | POST | Login and obtain JWT tokens | No | - |
-| `/api/users/v1/profile` | GET | Get user profile | Yes | User |
-| `/api/users/v1/update` | PUT | Update user profile | Yes | User |
-| `/api/auth/v1/swagger-ui.html` | GET | Swagger UI for User Service | No | - |
-
-**Sample Request Bodies:**
-
+> 
+| Endpoint | Method | Description | Auth Required |
+|----------|--------|-------------|---------------|
+| `/api/auth/v1/register` | POST | Register new user account | No |
+| `/api/auth/v1/login` | POST | Login and obtain JWT tokens | No |
+| `/api/auth/v1/refresh-token` | POST | Refresh access token using refresh token | No |
+| `/api/auth/v1/revoke` | POST | Revoke a specific refresh token (logout from device) | No |
+| `/api/auth/v1/revoke-all` | POST | Revoke all refresh tokens for current user | Yes |
+| `/api/auth/v1/me` | GET | Get current authenticated user's profile | Yes |
+| `/api/auth/v1/users/{id}` | GET | Get user profile by user ID | Yes |
 
 #### Example: Register a New User
 Request:
@@ -170,26 +174,49 @@ Response:
 
 
 
-### Auction Service Endpoints
+
+### Auction Service
 
 > **Note:** For full API details, request/response schemas, and more examples, see the [Swagger UI for Auction Service](http://localhost:8082/swagger-ui.html).
+> 
+| Endpoint | Method | Description | Auth Required |
+|----------|--------|-------------|---------------|
+| `/api/bids/v1` | GET | List all bids | Yes |
+| `/api/bids/v1/{id}` | GET | Get bid by ID | Yes |
+| `/api/bids/v1/users/{userId}` | GET | Get all bids by user | Yes |
+| `/api/bids/v1/products/{productId}` | GET | Get all bids for product | Yes |
+| `/api/bids/v1` | POST | Place a bid on auction | Yes |
+| `/api/products/v1` | GET | List all products | No |
+| `/api/products/v1/{id}` | GET | Get product details | No |
+| `/api/products/v1/category/{category}` | GET | Get products by category | No |
+| `/api/products/v1` | POST | Create new product | Yes |
+| `/api/products/v1/{id}` | PUT | Update product | Yes |
+| `/api/products/v1/{id}` | DELETE | Delete product | Yes |
+| `/api/categories/v1` | GET | List all categories | No |
+| `/api/categories/v1/{id}` | GET | Get category details | No |
+| `/api/categories/v1` | POST | Create new category | Yes |
+| `/api/categories/v1/{id}` | PUT | Update category | Yes |
+| `/api/categories/v1/{id}` | DELETE | Delete category | Yes |
 
-| Endpoint | Method | Description | Auth Required | Role |
-|----------|--------|-------------|---------------|------|
-| `/api/auctions/v1` | GET | List all active auctions | No | - |
-| `/api/auctions/v1/{id}` | GET | Get auction details | No | - |
-| `/api/auctions/v1` | POST | Create new auction | Yes | SELLER |
-| `/api/auctions/v1/{id}` | PUT | Update auction details | Yes | SELLER (Owner) |
-| `/api/auctions/v1/{id}` | DELETE | Delete auction | Yes | SELLER/ADMIN |
-| `/api/bids/v1` | POST | Place a bid on auction | Yes | BUYER |
-| `/api/bids/auction/v1` | GET | Get all bids for auction | Yes | - |
-| `/api/bids/user/v1` | GET | Get user's bid history | Yes | Owner/ADMIN |
-| `/api/products/v1` | GET | List all products | No | - |
-| `/api/products/v1/{id}` | GET | Get product details | No | - |
-| `/api/products/v1` | POST | Create new product | Yes | SELLER |
-| `/api/categories/v1` | GET | List all categories | No | - |
-| `/api/categories/v1/{id}` | GET | Get category details | No | - |
-| `/api/auctions/v1/swagger-ui.html` | GET | Swagger UI for Auction Service | No | - |
+#### Example: Place Bid
+Request:
+```json
+{
+  "auctionId": 1,
+  "amount": 800.00
+}
+```
+Response:
+```json
+{
+  "id": 42,
+  "auctionId": 1,
+  "bidderId": 1,
+  "amount": 800.00,
+  "timestamp": "2025-11-21T11:15:30Z",
+  "status": "ACCEPTED"
+}
+```
 
 ### Payment Service Endpoints
 
@@ -207,23 +234,47 @@ Response:
 
 ### Notification Service Endpoints
 
-> **Note:** For full API details, request/response schemas, and more examples, see the Swagger/OpenAPI spec or service code.
 | Endpoint | Method | Description | Auth Required | Role |
 |----------|--------|-------------|---------------|------|
 | `/api/notifications/v1/send` | POST | Send notification email | Yes | System |
 | `/api/notifications/v1/health` | GET | Health check | No | - |
 
-### Analytics Service Endpoints
+
+### Analytics Service
 
 > **Note:** For full API details, request/response schemas, and more examples, see the [Swagger UI for Analytics Service](http://localhost:8085/swagger-ui.html).
 
-| Endpoint | Method | Description | Auth Required | Role |
-|----------|--------|-------------|---------------|------|
-| `/api/analytics/v1/bidders/top` | GET | Get top bidders by total amount | Yes | ADMIN |
-| `/api/analytics/v1/auctions/popular` | GET | Get popular auctions by bid count | Yes | ADMIN |
-| `/api/analytics/v1/auctions/{id}/stats` | GET | Get detailed auction statistics | Yes | ADMIN |
-| `/api/analytics/v1/graphql` | POST | GraphQL endpoint for analytics | Yes | ADMIN |
-| `/api/analytics/v1/swagger-ui.html` | GET | Swagger UI for Analytics Service | No | - |
+
+| Endpoint | Method | Description | Auth Required |
+|----------|--------|-------------|---------------|
+| `/api/analytics/v1/analytics/top-bidders` | GET | Get top bidders by total amount | Yes |
+| `/api/analytics/v1/auctions/popular` | GET | Get popular auctions by bid count | Yes |
+| `/api/analytics/v1/auctions/{auctionId}/stats` | GET | Get detailed auction statistics | Yes |
+| `/api/analytics/v1/events/new-bid` | POST | Event: new bid placed | Yes (internal) |
+| `/api/analytics/v1/events/auction-status` | POST | Event: auction status update | Yes (internal) |
+
+#### Example: Get Top Bidders
+Request:
+`GET /api/analytics/v1/analytics/top-bidders?limit=5`
+Response:
+```json
+[
+  {
+    "userId": 3,
+    "userName": "Jane Smith",
+    "totalBids": 45,
+    "totalAmount": 12500.00,
+    "rank": 1
+  },
+  {
+    "userId": 1,
+    "userName": "John Doe",
+    "totalBids": 12,
+    "totalAmount": 3200.00,
+    "rank": 2
+  }
+]
+```
 
 **Sample Request Bodies:**
 
@@ -334,6 +385,8 @@ Response:
 ]
 ```
 
+
+---
 See also the `api-specs/` directory for OpenAPI YAML files.
 
 ---
