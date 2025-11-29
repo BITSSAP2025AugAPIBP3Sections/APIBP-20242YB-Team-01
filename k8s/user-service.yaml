@@ -1,0 +1,49 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+    spec:
+      containers:
+        - name: user-service
+          image: apibp-20242yb-team-01-user-service:dev
+          ports:
+            - containerPort: 8081
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://auth-db:5432/authsvc
+            - name: SPRING_DATASOURCE_USERNAME
+              value: auth
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: authpw
+            - name: SPRING_REDIS_HOST
+              value: redis
+            - name: SPRING_REDIS_PORT
+              value: "6379"
+            - name: OPENSEARCH_HOST
+              value: http://opensearch-node1:9200
+            - name: OPENSEARCH_USERNAME
+              value: admin
+            - name: OPENSEARCH_PASSWORD
+              value: quartz_EB_@5911
+          imagePullPolicy: IfNotPresent
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+spec:
+  selector:
+    app: user-service
+  ports:
+    - port: 8081
+      targetPort: 8081

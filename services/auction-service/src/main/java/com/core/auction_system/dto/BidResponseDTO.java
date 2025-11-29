@@ -8,14 +8,13 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class BidDTO {
-    private Integer amount;
-    private Integer productId;
+public class BidResponseDTO {
     private Integer id;
+    private Integer amount;
     private LocalDateTime bidTime;
-    private String productName;
-    private boolean isSold;
-    private boolean isFrozen;
-    private Integer buyerId;  
-    private LocalDateTime endTime;
+    private Integer productId;
+    private Integer bidderId;
+    private String email;
+    private String reservationId;
+    private String status;
 }

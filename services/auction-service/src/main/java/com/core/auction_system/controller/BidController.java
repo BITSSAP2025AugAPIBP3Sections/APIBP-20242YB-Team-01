@@ -1,6 +1,7 @@
 package com.core.auction_system.controller;
 
 import com.core.auction_system.dto.BidDTO;
+import com.core.auction_system.dto.BidResponseDTO;
 import com.core.auction_system.model.Bid;
 import com.core.auction_system.service.BidService;
 import java.util.List;
@@ -50,6 +51,36 @@ public class BidController {
         }
         logger.info("Bid found with id {}", id);
         return ResponseEntity.ok(opt.get());
+    }
+
+    /**
+     * GET /api/bids/v1/user/{userId}
+     * Get all bids placed by a specific user
+     */
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<List<BidResponseDTO>> getBidsByUser(@PathVariable Integer userId) {
+        logger.debug("GET /api/bids/v1/user/{} called", userId);
+        
+        List<Bid> userBids = bidService.getBidsByBidder(userId);
+        List<BidResponseDTO> response = bidService.mapToBidResponseDTOList(userBids);
+        
+        logger.info("Found {} bids for user {}", response.size(), userId);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * GET /api/bids/v1/product/{productId}
+     * Get all bids placed on a specific product
+     */
+    @GetMapping("/products/{productId}")
+    public ResponseEntity<List<BidResponseDTO>> getBidsByProduct(@PathVariable Integer productId) {
+        logger.debug("GET /api/bids/v1/product/{} called", productId);
+        
+        List<Bid> productBids = bidService.getBidsByProductId(productId);
+        List<BidResponseDTO> response = bidService.mapToBidResponseDTOList(productBids);
+        
+        logger.info("Found {} bids for product {}", response.size(), productId);
+        return ResponseEntity.ok(response);
     }
 
     /**
