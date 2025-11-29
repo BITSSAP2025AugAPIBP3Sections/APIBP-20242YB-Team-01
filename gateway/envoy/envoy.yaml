@@ -16,6 +16,13 @@ static_resources:
                   virtual_hosts:
                     - name: backend
                       domains: ["*"]
+                      cors:
+                        allow_origin_string_match:
+                          - prefix: "*"
+                        allow_methods: GET, POST, PUT, DELETE, OPTIONS
+                        allow_headers: authorization, content-type, x-requested-with
+                        max_age: "1728000"
+                        allow_credentials: true
                       routes:
                         - match:
                             prefix: "/api/auth"
@@ -54,6 +61,11 @@ static_resources:
                           route:
                             cluster: auction-service
                         - match:
+                            prefix: "/api/wallet"
+                          route:
+                            cluster: payment-service
+                            prefix_rewrite: "/wallet"
+                        - match:
                             prefix: "/api/payment"
                           route:
                             cluster: payment-service
@@ -79,6 +91,9 @@ static_resources:
                           route:
                             cluster: user-service
                 http_filters:
+                  - name: envoy.filters.http.cors
+                    typed_config:
+                      "@type": type.googleapis.com/envoy.extensions.filters.http.cors.v3.Cors
                   - name: envoy.filters.http.router
                     typed_config:
                       "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router

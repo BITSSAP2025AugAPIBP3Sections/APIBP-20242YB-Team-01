@@ -110,6 +110,10 @@ public class ProductService {
         return productRepository.findByCategory(category);
     }
 
+    public List<Product> getProductsBySeller(Integer sellerId) {
+        return productRepository.findBySellerId(sellerId);
+    }
+
     public Product saveProduct(Product product) {
         return productRepository.save(product);
     }

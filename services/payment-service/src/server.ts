@@ -1,5 +1,5 @@
 import express from "express";
-import bodyParser from "body-parser";
+import cors from "cors";
 import { CONFIG } from "./config";
 import { initRabbit } from "./rabbit/publisher";
 import { initDb } from "./wallet/wallet.service";
@@ -18,9 +18,18 @@ async function start() {
   await initRabbit();
 
   const app = express();
+
+  // Enable CORS for all routes
+  app.use(cors({
+    origin: ["http://localhost:5173", "http://localhost:3000", "http://localhost:8080"],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }));
+
   // capture raw body for debugging parse errors
   app.use(
-    bodyParser.json({
+    express.json({
       limit: "1mb",
       verify: (req: express.Request, _res: express.Response, buf: Buffer, encoding: string) => {
         try {
@@ -32,7 +41,7 @@ async function start() {
     })
   );
 
-  // body-parser JSON error handler: give more helpful 400 and log raw body for debugging
+  // JSON parse error handler: give more helpful 400 and log raw body for debugging
   app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
     if (err && (err.type === "entity.parse.failed" || err.status === 400)) {
       console.error("Body parse error:", err.message);

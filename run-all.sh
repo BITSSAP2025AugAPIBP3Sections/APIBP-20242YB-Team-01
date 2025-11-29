@@ -42,6 +42,13 @@ sleep 5
 echo "All infra reachable. Give services a few more seconds to boot..."
 sleep 10
 
+echo "Checking frontend availability..."
+check_tcp localhost 5173 "ebaazee-frontend"
+
 docker compose ps
 
-echo "Done. Use 'docker compose logs -f' to follow logs or 'docker compose down' to stop everything."
+echo ""
+echo "=========================================="
+echo "All services are up and running!"
+echo "=========================================="
+echo "Use 'docker compose logs -f' to follow logs or 'docker compose down' to stop everything."

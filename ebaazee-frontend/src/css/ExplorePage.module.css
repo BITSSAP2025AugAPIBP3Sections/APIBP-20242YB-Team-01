@@ -8,6 +8,13 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 32px;
+  gap: 1rem;
+}
+
+.topBarRight {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 .searchInput {
@@ -409,70 +416,560 @@
 
 /* … your existing styles … */
 
+/* ═══════════════════════════════════════════════════════════════════
+   ENHANCED MODAL STYLES - Beautiful Bid Dialog
+   ═══════════════════════════════════════════════════════════════════ */
+
 .modalOverlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.65);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  backdrop-filter: blur(8px);
+  animation: fadeIn 0.3s ease-in-out;
 }
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 .modal {
-  background: white;
-  padding: 24px;
-  border-radius: 8px;
-  width: 320px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  padding: 0;
+  border-radius: 24px;
+  width: 600px;
   max-width: 90%;
   box-sizing: border-box;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp 0.4s ease-out;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  position: relative;
 }
-.modal h2 {
-  margin-top: 0;
+
+@keyframes slideUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
+
+/* Close Button */
+.modalClose {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(255, 255, 255, 0.95);
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 22px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  transition: all 0.3s ease;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  font-weight: 300;
+  line-height: 1;
+}
+
+.modalClose:hover {
+  background: #ff4757;
+  color: white;
+  transform: rotate(90deg) scale(1.1);
+  box-shadow: 0 4px 16px rgba(255, 71, 87, 0.4);
+}
+
+/* Modal Header with Gradient */
+.modalHeader {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 40px 32px 32px;
+  border-radius: 24px 24px 0 0;
+  text-align: center;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.modalHeader::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+  animation: shimmer 4s infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(10%, 10%);
+  }
+}
+
+.modalHeaderIcon {
+  font-size: 56px;
+  margin-bottom: 16px;
+  animation: bounce 2s infinite;
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+.modalTitle {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.modalSubtitle {
+  margin: 12px 0 0;
+  font-size: 15px;
+  opacity: 0.95;
+  font-weight: 400;
+  position: relative;
+  z-index: 1;
+}
+
+/* Product Info Card */
+.productInfoCard {
+  margin: 24px 24px 20px;
+  padding: 20px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border-radius: 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.productIcon {
+  font-size: 40px;
+  flex-shrink: 0;
+}
+
+.productDetails {
+  flex: 1;
+}
+
+.productName {
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a202c;
+}
+
+.productDescription {
+  margin: 0;
+  font-size: 14px;
+  color: #4a5568;
+  line-height: 1.6;
+}
+
+/* Current Bid Badge */
+.currentBidBadge {
+  margin: 0 24px 20px;
+  padding: 20px;
+  background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 4px 12px rgba(253, 203, 110, 0.3);
+  border: 2px solid #f39c12;
+}
+
+.badgeIcon {
+  font-size: 36px;
+}
+
+.badgeContent {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.badgeLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: #7f5539;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badgeValue {
+  font-size: 28px;
+  font-weight: 800;
+  color: #2d3436;
+  line-height: 1;
+}
+
+/* Bid Statistics Container */
+.bidStatsContainer {
+  margin: 0 24px 20px;
+}
+
+.statsTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: #2d3436;
+  margin: 0 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+/* Bid Info Grid */
+.bidInfoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  background: white;
+  border-radius: 12px;
+  padding: 4px;
+}
+
+.bidInfoItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  border: 1px solid #dee2e6;
+}
+
+.bidInfoItem:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: #667eea;
+}
+
+.bidInfoIcon {
+  font-size: 28px;
+  flex-shrink: 0;
+}
+
+.bidInfoContent {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.bidInfoLabel {
+  font-size: 11px;
+  color: #6c757d;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.bidInfoValue {
+  font-size: 18px;
+  font-weight: 800;
+  color: #2d3436;
+  line-height: 1;
+}
+
+/* User Bid Notice */
+.userBidNotice {
+  margin: 0 24px 20px;
+  padding: 20px;
+  background: linear-gradient(135deg, #fff3cd 0%, #ffe8a1 100%);
+  border: 2px solid #ffc107;
+  border-radius: 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.2);
+}
+
+.noticeIcon {
+  font-size: 32px;
+  flex-shrink: 0;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.noticeContent {
+  flex: 1;
+}
+
+.noticeContent strong {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 16px;
+  color: #856404;
+}
+
+.noticeContent p {
+  margin: 8px 0;
+  font-size: 14px;
+  color: #856404;
+}
+
+.userBidAmount {
+  font-weight: 800;
+  font-size: 18px;
+  color: #d39e00;
+}
+
+.noticeContent small {
+  font-size: 12px;
+  opacity: 0.9;
+  color: #856404;
+}
+
+/* Bid Input Section */
+.bidInputSection {
+  margin: 0 24px 20px;
+  padding: 24px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 2px solid #e9ecef;
+}
+
 .formGroup {
   display: flex;
   flex-direction: column;
-  margin: 12px 0;
+  gap: 12px;
 }
-.formGroup label {
+
+.inputLabel {
+  font-size: 16px;
+  font-weight: 700;
+  color: #2d3436;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   margin-bottom: 4px;
+}
+
+.labelIcon {
+  font-size: 20px;
+}
+
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.currencySymbol {
+  position: absolute;
+  left: 16px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #667eea;
+  z-index: 1;
+}
+
+.bidInput {
+  width: 100%;
+  padding: 16px 16px 16px 40px;
+  border: 2px solid #e9ecef;
+  border-radius: 12px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #2d3436;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.bidInput:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+.bidInput:disabled {
+  background: #f5f5f5;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.bidInput::placeholder {
+  color: #adb5bd;
   font-weight: 500;
 }
-.formGroup input {
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+
+.bidHintBox {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 3px solid #667eea;
 }
+
+.hintIcon {
+  font-size: 16px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.bidHint {
+  font-size: 13px;
+  color: #6c757d;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.currentBidHint {
+  font-weight: 600;
+  color: #dc3545;
+}
+
+/* Feedback Messages */
+.successMsg,
+.errorMsg {
+  margin: 0 24px 20px;
+  padding: 16px 20px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.successMsg {
+  background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+  color: #155724;
+  border: 2px solid #28a745;
+}
+
+.errorMsg {
+  background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+  color: #721c24;
+  border: 2px solid #dc3545;
+}
+
+.feedbackIcon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+/* Modal Actions */
 .modalActions {
   display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  margin-top: 16px;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 24px 24px;
 }
-.btn {
-  padding: 8px 16px;
+
+.bidNowButton,
+.cancelButton {
+  flex: 1;
+  padding: 16px 24px;
   border: none;
-  background: #007bff;
-  color: white;
-  border-radius: 4px;
+  border-radius: 12px;
   cursor: pointer;
+  font-weight: 700;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
-.btn.outlined {
-  background: transparent;
-  border: 1px solid #ccc;
-  color: #333;
+
+.bidNowButton {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
-.successMsg {
-  color: green;
-  margin-top: 8px;
+
+.bidNowButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
 }
-.errorMsg {
-  color: red;
-  margin-top: 8px;
+
+.bidNowButton:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.bidNowButton:disabled {
+  background: linear-gradient(135deg, #adb5bd 0%, #868e96 100%);
+  cursor: not-allowed;
+  opacity: 0.6;
+  box-shadow: none;
+}
+
+.cancelButton {
+  background: white;
+  color: #6c757d;
+  border: 2px solid #dee2e6;
+}
+
+.cancelButton:hover {
+  background: #f8f9fa;
+  border-color: #adb5bd;
+  transform: translateY(-2px);
+}
+
+.buttonIcon {
+  font-size: 18px;
 }
 
 .modalDescription {
