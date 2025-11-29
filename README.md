@@ -1,6 +1,3 @@
-git clone https://github.com/BITSSAP2025AugAPIBP3Sections/APIBP-20242YB-Team-01.git
-docker compose up auth-db auction-db wallet-db redis rabbitmq -d
-
 <div align="center">
 
 # Ebaazee - Microservices-Based Online Auction System
