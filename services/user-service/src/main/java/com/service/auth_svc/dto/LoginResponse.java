@@ -4,6 +4,7 @@ public class LoginResponse {
     private String accessToken;
     private String refreshToken;
     private String tokenType = "Bearer";
+    private String role;
 
     public LoginResponse() {
     }
@@ -35,5 +36,13 @@ public class LoginResponse {
 
     public void setTokenType(String tokenType) {
         this.tokenType = tokenType;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

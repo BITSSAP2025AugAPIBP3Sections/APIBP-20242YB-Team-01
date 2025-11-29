@@ -150,7 +150,9 @@ public class AuthService {
         }
 
         log.info("Login successful for email={}", user.getEmail());
-        return new LoginResponse(accessToken, opaqueRefresh);
+        LoginResponse response = new LoginResponse(accessToken, opaqueRefresh);
+        response.setRole(user.getRole().name());
+        return response;
     }
 
     /**
@@ -238,7 +240,9 @@ public class AuthService {
                     java.time.Instant.now().plusMillis(refreshMs));
 
             log.info("Refresh token rotated for user={}", user.getEmail());
-            return new LoginResponse(newAccessToken, newOpaque);
+            LoginResponse response = new LoginResponse(newAccessToken, newOpaque);
+            response.setRole(user.getRole().name());
+            return response;
         } catch (Exception ex) {
             log.warn("Invalid refresh token presented: {}", ex.getMessage());
             throw new CustomException("Invalid refresh token", HttpStatus.UNAUTHORIZED);
