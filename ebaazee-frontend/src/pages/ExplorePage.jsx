@@ -272,37 +272,100 @@ export default function ExplorePage() {
   const closeBidModal = () => setModalOpen(false);
 
   // ─── Fetch “/api/bids/status/{productId}” ──────────────────────────
+  // const fetchBidStatus = async (productId) => {
+  //   const token = localStorage.getItem("token");
+  //   try {
+  //     const res = await fetch(
+  //         `http://localhost:8080/api/bids/v1/products/${productId}`,
+  //         {
+  //           headers: { Authorization: `Bearer ${token}` },
+  //         }
+  //     );
+  //     if (!res.ok) {
+  //       throw new Error("Failed to fetch bid status");
+  //     }
+  //     const data = await res.json();
+  //     setBidStatus({
+  //       totalBidders: data.totalBidders,
+  //       averageBidAmount: data.averageBidAmount,
+  //       maxBidAmount: data.maxBidAmount,
+  //       hasUserBid: data.hasUserBid,
+  //       userBidAmount: data.userBidAmount,
+  //     });
+  //   } catch (err) {
+  //     console.error("Error fetching bid status:", err);
+  //     setBidStatus({
+  //       totalBidders: 0,
+  //       averageBidAmount: 0,
+  //       maxBidAmount: 0,
+  //       hasUserBid: false,
+  //       userBidAmount: 0,
+  //     });
+  //   }
+  // };
   const fetchBidStatus = async (productId) => {
-    const token = localStorage.getItem("token");
-    try {
-      const res = await fetch(
-          `http://localhost:8080/api/bids/v1/${productId}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-      );
-      if (!res.ok) {
-        throw new Error("Failed to fetch bid status");
+  const token = localStorage.getItem("token");
+
+  try {
+    const res = await fetch(
+      `http://localhost:8080/api/bids/v1/products/${productId}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
       }
-      const data = await res.json();
-      setBidStatus({
-        totalBidders: data.totalBidders,
-        averageBidAmount: data.averageBidAmount,
-        maxBidAmount: data.maxBidAmount,
-        hasUserBid: data.hasUserBid,
-        userBidAmount: data.userBidAmount,
-      });
-    } catch (err) {
-      console.error("Error fetching bid status:", err);
-      setBidStatus({
-        totalBidders: 0,
-        averageBidAmount: 0,
-        maxBidAmount: 0,
-        hasUserBid: false,
-        userBidAmount: 0,
-      });
+    );
+
+    if (!res.ok) {
+      throw new Error("Failed to fetch bid status");
     }
-  };
+
+    const bids = await res.json();
+
+    // decode user ID from token
+    // const user = jwtDecode(token);
+    const userId = localStorage.getItem("id");
+
+    // total bidders
+    const totalBidders = bids.length;
+
+    // max bid
+    const maxBidAmount =
+      bids.length > 0
+        ? Math.max(...bids.map((b) => b.amount))
+        : 0;
+
+    // average bid
+    const averageBidAmount =
+      bids.length > 0
+        ? bids.reduce((sum, b) => sum + b.amount, 0) / bids.length
+        : 0;
+
+    // check if user has bid
+    const userBid = bids.find((b) => b.bidderId === userId);
+
+    const hasUserBid = !!userBid;
+    const userBidAmount = userBid ? userBid.amount : 0;
+
+    // set state
+    setBidStatus({
+      totalBidders,
+      averageBidAmount,
+      maxBidAmount,
+      hasUserBid,
+      userBidAmount,
+    });
+
+  } catch (err) {
+    console.error("Error fetching bid status:", err);
+    setBidStatus({
+      totalBidders: 0,
+      averageBidAmount: 0,
+      maxBidAmount: 0,
+      hasUserBid: false,
+      userBidAmount: 0,
+    });
+  }
+};
+
 
   const handleProceedToPayment = async () => {
     if (!selectedProduct) return;
@@ -321,38 +384,49 @@ export default function ExplorePage() {
 
     const token = localStorage.getItem("token");
     try {
-      const checkRes = await fetch(
-          `http://localhost:9090/api/bids/check/${selectedProduct.productId}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-      );
+  const token = localStorage.getItem("token");
 
-      if (!checkRes.ok) {
-        throw new Error("Failed to check existing bid");
-      }
+  // const user = jwtDecode(token);
+    const userId = localStorage.getItem("id");
 
-      const checkData = await checkRes.json();
-
-      if (checkData.alreadyBid === true) {
-        alert("⚠️ You have already placed a bid on this product.");
-        closeBidModal();
-        return;
-      }
-
-      localStorage.setItem(
-          "pendingBid",
-          JSON.stringify({
-            productId: selectedProduct.productId,
-            bidAmount: amt,
-          })
-      );
-      setModalOpen(false);
-      setSection("payment"); // ← switch to “payment” section
-    } catch (err) {
-      console.error("Error in check endpoint:", err);
-      setFeedback("⚠️ Unable to verify bid status. Please try again.");
+  const bidsRes = await fetch(
+    `http://localhost:8080/api/bids/v1/products/${selectedProduct.productId}`,
+    {
+      headers: { Authorization: `Bearer ${token}` },
     }
+  );
+
+  if (!bidsRes.ok) {
+    throw new Error("Failed to fetch bids");
+  }
+
+  const bids = await bidsRes.json();
+
+  // check if this user has already placed a bid
+  const alreadyBid = bids.some(bid => bid.bidderId === userId);
+
+  if (alreadyBid) {
+    alert("⚠️ You have already placed a bid on this product.");
+    closeBidModal();
+    return;
+  }
+
+  // continue to payment page
+  localStorage.setItem(
+    "pendingBid",
+    JSON.stringify({
+      productId: selectedProduct.productId,
+      bidAmount: amt,
+    })
+  );
+  setModalOpen(false);
+  setSection("payment");
+
+} catch (err) {
+  console.error("Error checking bid:", err);
+  setFeedback("⚠️ Unable to verify bid status. Please try again.");
+}
+
   };
 
   // ─── Determine product status ───────────────────────────────────────
