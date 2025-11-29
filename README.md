@@ -215,6 +215,42 @@ cd services/analytics-service && ./mvnw spring-boot:run
 
 ---
 
+### Method 3: Kubernetes with kind (Kubernetes in Docker)
+
+**Perfect for:** Local Kubernetes development, CI/CD, production-like testing
+
+```bash
+# 1. Start a kind cluster
+kind create cluster
+
+# 2. Build and load all service images into kind
+./k8s-build-and-load.sh
+
+# 3. Create the Envoy config ConfigMap (from your project root)
+kubectl create configmap envoy-config --from-file=envoy.yaml=$(pwd)/gateway/envoy/envoy.yaml
+
+# 4. Apply all Kubernetes manifests
+kubectl apply -f k8s/
+
+# 5. Check if all pods are running
+kubectl get pods
+
+# 6. Port-forward Envoy service to localhost (API Gateway)
+kubectl port-forward service/envoy 8080:8080
+# Now access your app at http://localhost:8080
+
+# 7. To clean up and remove the cluster
+kind delete cluster
+```
+
+**Notes:**
+- Ensure Docker Desktop, kind, and kubectl are installed.
+- The `envoy.yaml` path uses `$(pwd)` to work on any system.
+- If you update the Envoy config, recreate the ConfigMap with the same command.
+- All services, databases, and infrastructure will be managed by Kubernetes.
+
+---
+
 ### Complete Workflow Test
 
 ####  Register a New User

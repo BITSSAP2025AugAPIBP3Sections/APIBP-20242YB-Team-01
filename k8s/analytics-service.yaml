@@ -1,0 +1,49 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: analytics-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: analytics-service
+  template:
+    metadata:
+      labels:
+        app: analytics-service
+    spec:
+      containers:
+        - name: analytics-service
+          image: apibp-20242yb-team-01-analytics-service:dev
+          ports:
+            - containerPort: 8085
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://auction-db:5432/auction_db
+            - name: SPRING_DATASOURCE_USERNAME
+              value: auction_user
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: auction_pass
+            - name: JWT_SECRET
+              value: MySuperSecretKey123
+            - name: USER_SERVICE_BASE_URL
+              value: http://user-service:8081
+            - name: OPENSEARCH_HOST
+              value: http://opensearch-node1:9200
+            - name: OPENSEARCH_USERNAME
+              value: admin
+            - name: OPENSEARCH_PASSWORD
+              value: quartz_EB_@5911
+          imagePullPolicy: IfNotPresent
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: analytics-service
+spec:
+  selector:
+    app: analytics-service
+  ports:
+    - port: 8085
+      targetPort: 8085
