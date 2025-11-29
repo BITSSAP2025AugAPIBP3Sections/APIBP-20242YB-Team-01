@@ -12,7 +12,6 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class ReportResolver {
 
-    // added
     private static final Logger log = LoggerFactory.getLogger(ReportResolver.class);
 
     private final ReportService reportService;

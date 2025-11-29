@@ -78,6 +78,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: authpw
       SPRING_REDIS_HOST: redis
       SPRING_REDIS_PORT: "6379"
+      JWT_SECRET: MySuperSecretKey123
       OPENSEARCH_HOST: "http://opensearch-node1:9200"
       OPENSEARCH_USERNAME: admin
       OPENSEARCH_PASSWORD: quartz_EB_@5911
@@ -98,6 +99,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://auction-db:5432/auction_db
       SPRING_DATASOURCE_USERNAME: auction_user
       SPRING_DATASOURCE_PASSWORD: auction_pass
+      JWT_SECRET: MySuperSecretKey123
       OPENSEARCH_HOST: "http://opensearch-node1:9200"
       OPENSEARCH_USERNAME: admin
       OPENSEARCH_PASSWORD: quartz_EB_@5911

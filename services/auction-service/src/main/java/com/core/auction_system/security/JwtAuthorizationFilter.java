@@ -7,20 +7,17 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.filter.OncePerRequestFilter;
-
-import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.List;
-
-// added
+import javax.crypto.SecretKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private static final Logger log = LoggerFactory.getLogger(JwtAuthorizationFilter.class);
@@ -60,8 +57,9 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 Object userIdObj = claims.get("userId");
                 Integer userId = null;
                 if (userIdObj != null) {
-                    if (userIdObj instanceof Number) userId = ((Number) userIdObj).intValue();
-                    else {
+                    if (userIdObj instanceof Number) {
+                        userId = ((Number) userIdObj).intValue();
+                    } else {
                         try {
                             userId = Integer.parseInt(userIdObj.toString());
                         } catch (Exception ignored) {
@@ -74,15 +72,21 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                     String grantedRole = roleClaim == null ? "BUYER" : roleClaim;
                     String authority = grantedRole.startsWith("ROLE_") ? grantedRole : "ROLE_" + grantedRole;
 
+                    log.debug("JWT claims - username: {}, roleClaim: {}, authority: {}, userId: {}",
+                            username, roleClaim, authority, userId);
+
                     UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                             username, null, List.of(new SimpleGrantedAuthority(authority)));
                     auth.setDetails(userId);
                     SecurityContextHolder.getContext().setAuthentication(auth);
 
-                    log.info("Authenticated user '{}' with role '{}' and userId={}", username, authority, userId);
+                    log.info("Authenticated user '{}' with role '{}' and userId={} for request: {}",
+                            username, authority, userId, request.getRequestURI());
                 }
             } catch (Exception e) {
-                log.warn("JWT validation failed for request {}. Clearing context.", request.getRequestURI());
+                log.error("JWT validation failed for request {}. Error: {} - {}",
+                        request.getRequestURI(), e.getClass().getSimpleName(), e.getMessage());
+                log.debug("Full JWT validation error", e);
                 SecurityContextHolder.clearContext();
             }
         } else {
