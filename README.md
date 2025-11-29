@@ -1,443 +1,75 @@
+git clone https://github.com/BITSSAP2025AugAPIBP3Sections/APIBP-20242YB-Team-01.git
+docker compose up auth-db auction-db wallet-db redis rabbitmq -d
+
 <div align="center">
 
-# Ebaazee - Microservices-Based Online Auction System with REST-Based APIs
-
+# Ebaazee - Microservices-Based Online Auction System
 
 </div>
 
 ---
 
-## Overview
+## What is Ebaazee?
 
-### Problem
-Traditional auction platforms struggle with **scalability**, **real-time bidding reliability**, and **payment processing complexity**. Monolithic architectures make it difficult to handle concurrent auctions, manage notifications efficiently, and process payments securely while maintaining system resilience.
-
-### The Solution
-**Ebaazee** is a **production-ready microservices-based auction platform** that provides:
--  **Secure Authentication** with JWT tokens and role-based access control
-- **Real-time Auction Management** with concurrent bid handling and WebSocket updates
-- **Integrated Payment Processing** with wallet management and fund locking
-- **Automated Email Notifications** via event-driven architecture
--  **Advanced Analytics & Reporting** with GraphQL and Excel exports
--  **Centralized Logging** using OpenSearch cluster and Fluent Bit
-- **API Gateway** with Envoy for intelligent routing and circuit breaking
+Ebaazee is a modern, production-ready microservices-based auction platform. It enables real-time bidding, secure payments, automated notifications, and analytics, all orchestrated via an API Gateway. Built for scalability, reliability, and developer friendliness.
 
 ---
-
-## System Architecture
-
-### Microservices Overview
-
-| Service | Description | Technology Stack | Port |
-|---------|-------------|------------------|------|
-| **User Service (API Gateway -Envoy)** | Authentication, authorization, JWT management, user profiles | Java 21, Spring Boot 3.5, PostgreSQL, Redis | 8081 |
-| **Auction Service** | Auction & bid management, product catalog, scheduled tasks | Java 21, Spring Boot 3.5, PostgreSQL, RabbitMQ | 8082 |
-| **Payment Service** | Wallet operations, payment gateway, fund locking/unlocking | Node.js 20, TypeScript, Express, PostgreSQL | 8086 |
-| **Notification Service** | Email notifications via SMTP, event consumption | Go 1.22, RabbitMQ, Gmail SMTP | 8083 |
-| **Analytics Service** | Business intelligence, GraphQL reporting, Excel exports | Java 21, Spring Boot 3.5, GraphQL, Apache POI | 8085 |
-
-
-###  Infrastructure Components
-
-| Component | Description | Port(s) |
-|-----------|-------------|---------|
-| **PostgreSQL (auth-db)** | User service database | 5433 |
-| **PostgreSQL (auction-db)** | Auction & analytics database | 5434 |
-| **PostgreSQL (wallet-db)** | Payment service database | 5435 |
-| **Redis** | Session management, token caching | 6379 |
-| **RabbitMQ** | Event-driven messaging broker | 5672, 15672 (Management UI) |
-| **OpenSearch Node 1** | Centralized logging node | 9200, 9600 |
-| **OpenSearch Node 2** | Clustered logging node | - |
-| **OpenSearch Dashboards** | Log visualization UI | 5601 |
-| **Fluent Bit** | Log aggregation and forwarding | - |
-
----
-
-## System Flow
-
-### User Authentication Flow
-```
-User → API Gateway (Envoy:8080) → User Service (8081)
-  ↓
-Validates credentials → Generates JWT (access + refresh tokens)
-  ↓
-Stores session in Redis → Returns tokens to client
-  ↓
-All subsequent requests include JWT → Gateway validates via User Service
-```
-
-### Auction Creation & Bidding Flow
-```
-Seller creates auction → Auction Service validates → Stores in PostgreSQL
-  ↓
-Scheduled task monitors status (PENDING → ACTIVE → CLOSED)
-  ↓
-Buyer places bid → Auction Service validates (amount, timing, eligibility)
-  ↓
-Payment Service checks wallet → Locks required funds
-  ↓
-RabbitMQ publishes bid event → Notification Service sends email
-  ↓
-Analytics Service tracks metrics → Updates bid statistics
-  ↓
-Auction closes → Winner determined → Funds deducted from winner's wallet
-```
-
-###  Payment Processing Flow
-```
-User deposits funds → Payment Gateway processes → Wallet balance updated
-  ↓
-Bid placed → Payment Service freezes bid amount (locked balance)
-  ↓
-Auction ends:
-  - Winner → Locked funds deducted
-  - Outbid users → Frozen funds released back to available balance
-  ↓
-RabbitMQ publishes payment events → Notification Service sends confirmations
-```
-
-### Real-time Notification Flow
-```
-Event occurs (bid placed, auction ended, payment processed)
-  ↓
-Service publishes event to RabbitMQ exchange
-  ↓
-Notification Service consumes from queue → Formats email
-  ↓
-Sends via SMTP (Gmail) → User receives notification
-  ↓
-All events logged to OpenSearch via Fluent Bit
-```
-
-### Analytics & Reporting Flow
-```
-Admin requests analytics → API Gateway → Analytics Service
-  ↓
-REST API: GET top bidders, popular auctions, statistics
-  ↓
-GraphQL API: Complex queries, Excel report generation
-  ↓
-Analytics Service queries auction-db → Processes data
-  ↓
-Returns JSON response or base64-encoded Excel file
-```
-
----
-
-## API Documentation (Swagger/OpenAPI)
-
-📚 **Interactive API documentation is available for all services via Swagger UI**
-
-Once the services are running, access the Swagger UI at:
-
-| Service | Swagger UI | OpenAPI Spec |
-|---------|------------|--------------|
-| **Analytics Service** | `http://localhost:8085/swagger-ui.html` | `http://localhost:8085/v3/api-docs` |
-| **User Service** | `http://localhost:8081/swagger-ui.html` | `http://localhost:8081/v3/api-docs` |
-| **Auction Service** | `http://localhost:8082/swagger-ui.html` | `http://localhost:8082/v3/api-docs` |
-
-### Features:
-- 🔍 **Explore all endpoints** with detailed request/response schemas
-- 🧪 **Test APIs directly** from the browser
-- 🔐 **JWT authentication support** - Use the "Authorize" button to add your token
-- 📥 **Export OpenAPI specs** for client code generation
-
----
-
-## System Diagram
-
-![alt text](system-diagram.png)
-
-## Container Diagram
-
-![alt text](container-diagram.png)
 
 ## Quick Start
 
 ### Prerequisites
 
-| Requirement | Version | Download |
-|-------------|---------|----------|
-| **Docker Desktop** | Latest | [Download](https://www.docker.com/products/docker-desktop) |
-| **Docker Compose** | v2.0+ | Included with Docker Desktop |
-| **Git** | Latest | [Download](https://git-scm.com/) |
-| **Minimum RAM** | 8GB | Recommended: 16GB |
+- Docker Desktop (with Docker Compose)
+- Git
+- 8GB+ RAM (16GB recommended)
 
----
-
-### Method 1: Docker Compose (Recommended - Complete Stack)
-
-**Perfect for:** Development, testing, demonstrations, production simulation  
-**Time to run:** 3-5 minutes (first build may take 10-15 minutes)
+### Run the Complete Stack (Recommended)
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/BITSSAP2025AugAPIBP3Sections/APIBP-20242YB-Team-01.git
+
 cd APIBP-20242YB-Team-01
 
 # 2. Start all services
 ./run-all.sh
-# Or manually: docker compose up --build
+# Or: docker compose up --build
 
-# 3. Wait for services to initialize (2-3 minutes)
-# Watch logs: docker compose logs -f
+# 3. Access the API Gateway
+http://localhost:8080
+```
 
-**What you get automatically:**
--  **Complete microservices stack** (5 production-ready services)
-- **3 PostgreSQL databases** (isolated per service domain)
--  **Redis cache** for session management
-- **RabbitMQ message broker** with management UI
-- **OpenSearch cluster** (2-node) for centralized logging
-- **OpenSearch Dashboards** for log visualization
--  **Fluent Bit** for automatic log aggregation
--  **Envoy API Gateway** with circuit breaking and retries
--  **JWT authentication** ready to use
--  **Email notification system** (configure SMTP credentials)
-
----
-
-### Method 2: Individual Service Setup (Development Mode)
-
-**Perfect for:** Service-specific development, debugging, isolated testing
+### Stopping Services
 
 ```bash
-# 1. Start infrastructure only
-docker compose up auth-db auction-db wallet-db redis rabbitmq -d
-
-# 2. Run individual services locally
-# See service-specific README files:
-cd services/user-service && ./mvnw spring-boot:run
-cd services/auction-service && ./mvnw spring-boot:run
-cd services/payment-service && npm install && npm start
-cd services/notification-service && go run cmd/notifier/main.go
-cd services/analytics-service && ./mvnw spring-boot:run
+docker compose down
 ```
 
 ---
 
-### Method 3: Kubernetes with kind (Kubernetes in Docker)
+## Features
 
-**Perfect for:** Local Kubernetes development, CI/CD, production-like testing
-
-```bash
-# 1. Start a kind cluster
-kind create cluster
-
-# 2. Build and load all service images into kind
-./k8s-build-and-load.sh
-
-# 3. Create the Envoy config ConfigMap (from your project root)
-kubectl create configmap envoy-config --from-file=envoy.yaml=$(pwd)/gateway/envoy/envoy.yaml
-
-# 4. Apply all Kubernetes manifests
-kubectl apply -f k8s/
-
-# 5. Check if all pods are running
-kubectl get pods
-
-# 6. Port-forward Envoy service to localhost (API Gateway)
-kubectl port-forward service/envoy 8080:8080
-# Now access your app at http://localhost:8080
-
-# 7. To clean up and remove the cluster
-kind delete cluster
-```
-
-**Notes:**
-- Ensure Docker Desktop, kind, and kubectl are installed.
-- The `envoy.yaml` path uses `$(pwd)` to work on any system.
-- If you update the Envoy config, recreate the ConfigMap with the same command.
-- All services, databases, and infrastructure will be managed by Kubernetes.
+- User authentication & JWT security
+- Real-time auction management
+- Wallet-based payments
+- Email notifications
+- Analytics & reporting
+- Centralized logging
 
 ---
 
-### Complete Workflow Test
+## Documentation & Advanced Usage
 
-####  Register a New User
-```bash
-curl -X POST http://localhost:8080/api/auth/v1/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "John Doe",
-    "email": "john.doe@example.com",
-    "password": "SecurePass123!",
-    "role": "BUYER"
-  }'
+For detailed architecture, API docs, troubleshooting, Kubernetes setup, and contribution guidelines, see:
 
-# Expected Response:
-# {
-#   "id": 1,
-#   "name": "John Doe",
-#   "email": "john.doe@example.com",
-#   "role": "BUYER",
-#   "createdAt": "2025-11-21T10:30:00Z"
-# }
-```
+- [docs/PROJECT_OVERVIEW.md](docs/PROJECT_OVERVIEW.md)
+- Service-specific docs in `services/*/INFO.MD`
+- API Gateway config in `gateway/api-gateway/API-GATEWAY.MD`
 
-#### Login and Obtain JWT Token
-```bash
-curl -X POST http://localhost:8080/api/auth/v1/login \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "john.doe@example.com",
-    "password": "SecurePass123!"
-  }'
+---
 
-# Expected Response:
-# {
-#   "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-#   "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-#   "expiresIn": 3600
-# }
+## License
 
-# Save the accessToken for subsequent requests
-export TOKEN="<your-access-token>"
-```
-
-####  View Available Auctions
-```bash
-curl http://localhost:8080/api/auctions/v1 \
-  -H "Authorization: Bearer $TOKEN"
-
-# Expected Response:
-# [
-#   {
-#     "id": 1,
-#     "title": "Vintage Watch",
-#     "description": "Rare 1960s Omega Seamaster",
-#     "startingPrice": 500.00,
-#     "currentBid": 750.00,
-#     "status": "ACTIVE",
-#     "endTime": "2025-11-25T18:00:00Z",
-#     "sellerId": 5,
-#     "categoryId": 2
-#   }
-# ]
-```
-
-####  Get Product Details
-```bash
-curl http://localhost:8080/api/products/v1 \
-  -H "Authorization: Bearer $TOKEN"
-
-# Expected Response:
-# {
-#   "id": 1,
-#   "name": "Vintage Omega Watch",
-#   "description": "Authentic 1960s timepiece",
-#   "category": "Watches & Jewelry",
-#   "images": ["https://cdn.example.com/watch1.jpg"],
-#   "condition": "EXCELLENT"
-# }
-```
-
-####  Check Wallet Balance
-```bash
-curl http://localhost:8080/api/payment/wallet/<userId> \
-  -H "Authorization: Bearer $TOKEN"
-
-# Expected Response:
-# {
-#   "userId": 1,
-#   "availableBalance": 1000.00,
-#   "lockedBalance": 0.00,
-#   "totalBalance": 1000.00,
-#   "currency": "USD"
-# }
-```
-
-#### Place a Bid
-```bash
-curl -X POST http://localhost:8080/api/bids/v1 \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "auctionId": 1,
-    "amount": 800.00
-  }'
-
-# Expected Response:
-# {
-#   "id": 42,
-#   "auctionId": 1,
-#   "bidderId": 1,
-#   "amount": 800.00,
-#   "timestamp": "2025-11-21T11:15:30Z",
-#   "status": "ACCEPTED"
-# }
-# 
-# Side Effects:
-# - $800 locked in your wallet
-# - RabbitMQ event published
-# - Email notification sent
-# - Analytics updated
-```
-
-#### View Bids for an Auction
-```bash
-curl http://localhost:8080/api/bids/auction/v1 \
-  -H "Authorization: Bearer $TOKEN"
-
-# Expected Response:
-# [
-#   {
-#     "id": 42,
-#     "bidderId": 1,
-#     "bidderName": "John Doe",
-#     "amount": 800.00,
-#     "timestamp": "2025-11-21T11:15:30Z"
-#   },
-#   {
-#     "id": 41,
-#     "bidderId": 3,
-#     "bidderName": "Jane Smith",
-#     "amount": 750.00,
-#     "timestamp": "2025-11-21T10:45:20Z"
-#   }
-# ]
-```
-
-#### View Analytics (Admin Only)
-```bash
-# Top Bidders
-curl http://localhost:8080/api/analytics/v1/bidders/top?limit=5 \
-  -H "Authorization: Bearer $TOKEN"
-
-# Expected Response:
-# [
-#   {
-#     "userId": 3,
-#     "userName": "Jane Smith",
-#     "totalBids": 45,
-#     "totalAmount": 12500.00,
-#     "rank": 1
-#   },
-#   {
-#     "userId": 1,
-#     "userName": "John Doe",
-#     "totalBids": 12,
-#     "totalAmount": 3200.00,
-#     "rank": 2
-#   }
-# ]
-
-# Popular Auctions
-curl http://localhost:8080/api/analytics/v1/auctions/popular?limit=5 \
-  -H "Authorization: Bearer $TOKEN"
-
-# Expected Response:
-# [
-#   {
-#     "auctionId": 1,
-#     "title": "Vintage Watch",
-#     "totalBids": 23,
-#     "uniqueBidders": 8,
-#     "currentPrice": 800.00,
-#     "views": 342
-#   }
-# ]
-```
-
+This project is licensed under the MIT License. See [LICENSE](LICENSE).
 #### Download Excel Report (GraphQL - Admin Only)
 ```bash
 curl -X POST http://localhost:8080/api/analytics/v1/graphql \
