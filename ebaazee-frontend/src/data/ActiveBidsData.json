@@ -1,0 +1,157 @@
+{
+  "liveAuctions": [
+    {
+      "id": 1,
+      "title": "Zenith Auto Elevating Driving Your Experience",
+      "price": 2898,
+      "image": "/assets/auctions/car1.jpg"
+    },
+    {
+      "id": 2,
+      "title": "Heritage Had Curating Watch Time Treasures",
+      "price": 8974,
+      "image": "/assets/auctions/watch1.jpg"
+    },
+    {
+      "id": 3,
+      "title": "Vintage Valor Embracing the Elegance of Eras Past",
+      "price": 3420,
+      "image": "/assets/auctions/vase1.jpg"
+    },
+    {
+      "id": 4,
+      "title": "Titan Motors Built to Conquer Every Mile",
+      "price": 10500,
+      "image": "/assets/auctions/car2.jpg"
+    },
+    {
+      "id": 5,
+      "title": "Canvas & Culture Brush with Elegance Auction",
+      "price": 8740,
+      "image": "/assets/auctions/art1.jpg"
+    },
+    {
+      "id": 6,
+      "title": "Nomism Nexus Connecting Collectors to Coins",
+      "price": 4648,
+      "image": "/assets/auctions/coin1.jpg"
+    }
+  ],
+
+  "popularAuctions": [
+    {
+      "id": 7,
+      "title": "Masterworks Auctions Where Art Finds a Home",
+      "price": 4648,
+      "image": "/assets/auctions/art2.jpg"
+    },
+    {
+      "id": 8,
+      "title": "Brushed Brilliance Modernity Art Auction",
+      "price": 8974,
+      "image": "/assets/auctions/art3.jpg"
+    },
+    {
+      "id": 9,
+      "title": "Antique Radio Reborn with Modern Acoustics",
+      "price": 199,
+      "image": "/assets/auctions/radio1.jpg"
+    },
+    {
+      "id": 10,
+      "title": "Classic Painting Revived for the Contemporary Eye",
+      "price": 2250,
+      "image": "/assets/auctions/painting1.jpg"
+    },
+    {
+      "id": 11,
+      "title": "Rare Vase Elegance of Centuries Long Past",
+      "price": 150,
+      "image": "/assets/auctions/vase2.jpg"
+    },
+    {
+      "id": 12,
+      "title": "Retro Camera Capturing Nostalgic Moments",
+      "price": 120,
+      "image": "/assets/auctions/camera1.jpg"
+    }
+  ],
+
+  "highestBids": [
+    {
+      "id": 13,
+      "title": "Luxury Handbag & Watch Collector’s Set",
+      "price": 12500,
+      "image": "/assets/auctions/handbag1.jpg"
+    },
+    {
+      "id": 14,
+      "title": "Sneakerhead Supreme Limited Edition",
+      "price": 9800,
+      "image": "/assets/auctions/sneaker1.jpg"
+    },
+    {
+      "id": 15,
+      "title": "P&A Automotive Wheel Masterpiece",
+      "price": 7300,
+      "image": "/assets/auctions/wheel1.jpg"
+    },
+    {
+      "id": 16,
+      "title": "100% Refurbished Vintage Electronics Bundle",
+      "price": 5400,
+      "image": "/assets/auctions/electronics1.jpg"
+    },
+    {
+      "id": 17,
+      "title": "Trading Cards Rare Collector’s Edition",
+      "price": 6600,
+      "image": "/assets/auctions/cards1.jpg"
+    },
+    {
+      "id": 18,
+      "title": "Pre-loved Luxury Handpicked Jewelry Lot",
+      "price": 11500,
+      "image": "/assets/auctions/jewelry1.jpg"
+    }
+  ],
+
+  "upcomingAuctions": [
+    {
+      "id": 19,
+      "title": "Antique Radio Reborn with Modern Acoustics",
+      "price": 199,
+      "image": "/assets/auctions/radio2.jpg"
+    },
+    {
+      "id": 20,
+      "title": "Classic Painting Revived for the Contemporary Eye",
+      "price": 2250,
+      "image": "/assets/auctions/painting2.jpg"
+    },
+    {
+      "id": 21,
+      "title": "Rustic Clock Timeless Elegance",
+      "price": 50,
+      "image": "/assets/auctions/clock1.jpg"
+    },
+    {
+      "id": 22,
+      "title": "Antique Radio Reborn with Modern Acoustics",
+      "price": 190,
+      "image": "/assets/auctions/radio3.jpg"
+    },
+    {
+      "id": 23,
+      "title": "Retro Camera Capturing Nostalgic Moments",
+      "price": 120,
+      "image": "/assets/auctions/camera2.jpg"
+    },
+    {
+      "id": 24,
+      "title": "Rare Vase Elegance of Centuries Long Past",
+      "price": 150,
+      "image": "/assets/auctions/vase3.jpg"
+    }
+  ]
+}

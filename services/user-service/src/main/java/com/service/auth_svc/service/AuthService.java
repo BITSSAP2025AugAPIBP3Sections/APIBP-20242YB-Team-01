@@ -152,6 +152,7 @@ public class AuthService {
         log.info("Login successful for email={}", user.getEmail());
         LoginResponse response = new LoginResponse(accessToken, opaqueRefresh);
         response.setRole(user.getRole().name());
+        response.setId(user.getId().intValue());
         return response;
     }
 
@@ -242,6 +243,7 @@ public class AuthService {
             log.info("Refresh token rotated for user={}", user.getEmail());
             LoginResponse response = new LoginResponse(newAccessToken, newOpaque);
             response.setRole(user.getRole().name());
+            response.setId(user.getId().intValue());
             return response;
         } catch (Exception ex) {
             log.warn("Invalid refresh token presented: {}", ex.getMessage());

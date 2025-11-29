@@ -91,18 +91,15 @@ public class ProductService {
                 .orElse(null);
     }
 
-    // endTime must be exactly on the hour (minute, second, nano == 0)
-    // and must be in the future but no more than 24 hours from now
+    /**
+     * Validates that endTime is in the future.
+     * Users can select any future date and time
+     * 
+     * @param endTime the auction end time to validate
+     * @return true if valid, false otherwise
+     */
     private boolean isValidEndTime(LocalDateTime endTime) {
-        if (endTime.getMinute() != 0 || endTime.getSecond() != 0 || endTime.getNano() != 0) {
-            return false;
-        }
-        LocalDateTime now = LocalDateTime.now();
-        if (!endTime.isAfter(now)) {
-            return false;
-        }
-        // endTime must be in the future (strictly after now)
-        return endTime.isAfter(now);
+        return endTime.isAfter(LocalDateTime.now());
     }
 
     public void deleteProduct(Integer id) {
@@ -113,11 +110,6 @@ public class ProductService {
         return productRepository.findByCategory(category);
     }
 
-    public List<Product> getProductsBySeller(Integer sellerId) {
-        return productRepository.findBySellerId(sellerId);
-    }
-
-    // convenience save method used by controllers/services when partial updates are needed
     public Product saveProduct(Product product) {
         return productRepository.save(product);
     }

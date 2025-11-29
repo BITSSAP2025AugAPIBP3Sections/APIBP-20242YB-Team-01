@@ -5,7 +5,6 @@ import com.core.auction_system.model.Product;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
 public interface BidRepository extends JpaRepository<Bid, Integer> {
     boolean existsByBidderIdAndProduct(Integer bidderId, Product product);
@@ -14,12 +13,9 @@ public interface BidRepository extends JpaRepository<Bid, Integer> {
 
     List<Bid> findByProduct(Product product);
 
+    List<Bid> findByProductId(Integer productId);
+
     Optional<Bid> findByReservationId(String reservationId);
 
     Optional<Bid> findTopByProductOrderByAmountDesc(Product product);
-
-    long countByProduct(Product product);
-
-    @Query("SELECT AVG(b.amount) FROM Bid b WHERE b.product = :product")
-    Double findAverageBidAmountByProduct(Product product);
 }

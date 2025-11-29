@@ -1,0 +1,35 @@
+{
+    "carouselItems": [
+    {
+      "id": 1,
+      "title": "May the collectibles be with you",
+      "text": "Grow your collection with toys, cards, and Star Wars treasures.",
+      "buttonText": "Shop now",
+      "image": ""  
+    },
+    {
+      "id": 2,
+      "title": "Discover Rare Finds",
+      "text": "Handpicked vintage and limited-edition items.",
+      "buttonText": "Explore",
+      "image": ""
+    },
+    {
+      "id": 3,
+      "title": "New Arrivals",
+      "text": "Be the first to bid on the latest listings.",
+      "buttonText": "Check it out",
+      "image": ""
+    }
+  ],
+    "categories": [
+    { "value": "luxury",       "label": "Luxury",               "image": "src/assets/Luxury.jpeg" },
+    { "value": "sneakers",     "label": "Sneakers",             "image": "src/assets/Sneakers.jpeg" },
+    { "value": "p&a",          "label": "P&A",                  "image": "src/assets/P&A.jpeg" },
+    { "value": "refurbished",  "label": "Refurbished",          "image": "src/assets/Refurbished.jpeg" },
+    { "value": "tradingCards", "label": "Trading Cards",        "image": "src/assets/TradingCards.jpeg" },
+    { "value": "preLoved",     "label": "Pre-loved Luxury",     "image": "src/assets/PreLovedLuxury.jpeg" },
+    { "value": "toys",         "label": "Toys",                 "image": "src/assets/Toys.jpeg" }
+    ]
+  }
+  

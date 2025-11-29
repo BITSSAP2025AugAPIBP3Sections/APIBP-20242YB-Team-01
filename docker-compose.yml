@@ -50,18 +50,16 @@ services:
       timeout: 5s
       retries: 10
 
-  redis:
-    image: redis:7
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis-data:/data
-
   rabbitmq:
     image: rabbitmq:3-management
     ports:
       - "5672:5672"
       - "15672:15672"
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # -----------------------
   # Microservices
@@ -76,8 +74,6 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://auth-db:5432/authsvc
       SPRING_DATASOURCE_USERNAME: auth
       SPRING_DATASOURCE_PASSWORD: authpw
-      SPRING_REDIS_HOST: redis
-      SPRING_REDIS_PORT: "6379"
       JWT_SECRET: MySuperSecretKey123
       OPENSEARCH_HOST: "http://opensearch-node1:9200"
       OPENSEARCH_USERNAME: admin
@@ -87,7 +83,6 @@ services:
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
     depends_on:
       - auth-db
-      - redis
 
   auction-service:
     build:
@@ -146,8 +141,11 @@ services:
       OPENSEARCH_USERNAME: admin
       OPENSEARCH_PASSWORD: quartz_EB_@5911
     depends_on:
-      - wallet-db
-      - rabbitmq
+      wallet-db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    restart: on-failure
 
   notification-service:
     build:
@@ -166,7 +164,9 @@ services:
     env_file:
       - ./.env
     depends_on:
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
+    restart: on-failure
 
   envoy:
     image: envoyproxy/envoy:v1.27-latest
@@ -276,7 +276,6 @@ volumes:
   auth-db-data:
   auction-db-data:
   wallet-db-data:
-  redis-data:
   opensearch-data1:
   opensearch-data2:
 

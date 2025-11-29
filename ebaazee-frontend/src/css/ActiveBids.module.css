@@ -1,0 +1,157 @@
+.root {
+    width: 100%;
+  }
+  
+  /* Top bar */
+  .topBar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+  }
+  
+  .searchInput {
+    padding: 10px 16px;
+    border-radius: 24px;
+    border: 1px solid #ccc;
+    max-width: 80%;
+    box-sizing: border-box;
+  }
+  .search {
+    flex: 1;
+  }
+
+  .wallet {
+    background-color: #fff;
+    border-radius: 20px;
+    padding: 10px 20px;
+    font-weight: bold;
+  }
+  
+ /* Section */
+.section { 
+  margin-bottom: 48px; 
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  margin-bottom: 16px;
+}
+
+/* Carousel Wrapper */
+.carouselWrapper {
+  position: relative;
+  padding: 0 80px; 
+}
+.carousel {
+  display: flex;
+  gap: 32px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 12px;
+  scrollbar-width: none;
+}
+.carousel::-webkit-scrollbar { display: none; }
+
+/* Card */
+.card {
+  position: relative;
+  scroll-snap-align: center;
+  flex: 0 0 auto;
+  width: 350px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Image */
+.cardImage {
+  width: 100%;
+  height: 180px;
+  background-size: cover;
+  background-position: center;
+  border-radius: 8px;
+  margin-top: 32px;
+}
+
+/* Countdown */
+.countdown {
+  display: flex;
+  gap: 12px;
+  background: #fff;
+  padding: 10px 16px;
+  border-radius: 24px;
+  margin: -24px 0 16px; /* overlap image bottom */
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  z-index: 1;
+}
+.timeSegment {
+  text-align: center;
+}
+.timeSegment span {
+  font-weight: bold;
+  display: block;
+}
+.timeSegment small {
+  font-size: 0.7rem;
+  color: #666;
+}
+
+/* Title & Bid */
+.cardTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  margin: 8px 0;
+}
+.currentBid {
+  font-size: 0.9rem;
+  margin-bottom: 12px;
+}
+
+/* Bid button */
+.bidButton {
+  padding: 10px 20px;
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: 24px;
+  cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+.bidButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+.bidButton:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+/* Carousel arrows */
+.carouselArrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  background: rgba(255,255,255,0.95);
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  cursor: pointer;
+  z-index: 2;
+}
+.carouselArrow:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+.carouselArrow.left  { left: 16px; }
+.carouselArrow.right { right: 16px; }

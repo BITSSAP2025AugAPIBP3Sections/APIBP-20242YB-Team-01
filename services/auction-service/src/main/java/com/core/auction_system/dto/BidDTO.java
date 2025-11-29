@@ -9,17 +9,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BidDTO {
-    // Required fields from user
     private Integer amount;
     private Integer productId;
-
-    // Optional fields for response/internal use
     private Integer id;
     private LocalDateTime bidTime;
     private String productName;
     private boolean isSold;
     private boolean isFrozen;
-    private Integer buyerId;  // Will be extracted from JWT, not from user input
+    private Integer buyerId;  
     private LocalDateTime endTime;
-    // Lombok will generate constructors, getters, setters
 }

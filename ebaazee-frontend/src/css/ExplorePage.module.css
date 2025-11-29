@@ -1,0 +1,508 @@
+.root {
+  width: 100%;
+}
+
+/* Top bar */
+.topBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.searchInput {
+  padding: 10px 16px;
+  border-radius: 24px;
+  border: 1px solid #ccc;
+  max-width: 80%;
+  box-sizing: border-box;
+}
+.search {
+  flex: 1;
+}
+
+.wallet {
+  background-color: #fff;
+  border-radius: 20px;
+  padding: 10px 20px;
+  font-weight: bold;
+}
+
+/* Section wrapper */
+.section {
+  margin-bottom: 48px;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.sectionTitle {
+  margin: 0;
+}
+
+.viewAll {
+  text-decoration: none;
+  color: #3f51b5;
+  font-weight: bold;
+}
+
+/* Carousel wrapper */
+.carouselWrapper {
+  position: relative;
+  width: 100%;
+  margin-bottom: 48px;
+}
+.carouselScroll {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.carouselScroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* Each slide takes full width of content area */
+.carouselSlide {
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+  position: relative;
+  background: #fff;
+  border-radius: 12px;
+  padding: 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+  margin-right: 24px; /* gap between slides */
+}
+
+/* Left side content */
+.carouselContent {
+  flex: 1;
+  max-width: 40%;
+}
+.carouselTitle {
+  margin: 0 0 16px;
+  font-size: 2rem;
+  line-height: 1.2;
+}
+.carouselText {
+  margin: 0 0 24px;
+  font-size: 1rem;
+  color: #555;
+}
+.carouselButton {
+  padding: 12px 24px;
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: 24px;
+  cursor: pointer;
+}
+
+/* Right side overlapping images */
+.imagesStack {
+  position: relative;
+  flex: 1;
+  max-width: 50%;
+  height: 240px;
+}
+.imagesStackItem {
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  border-radius: 8px;
+  background: #f3f3f3;
+  object-fit: cover;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+/* stack offsets */
+.imagesStackItem:nth-child(1) {
+  top: 0;
+  right: 0;
+  z-index: 3;
+}
+.imagesStackItem:nth-child(2) {
+  top: 20px;
+  right: 40px;
+  z-index: 2;
+}
+.imagesStackItem:nth-child(3) {
+  top: 40px;
+  right: 80px;
+  z-index: 1;
+}
+
+/* Dots */
+.carouselDots {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+}
+.dot {
+  width: 8px;
+  height: 8px;
+  background: black;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.dotActive {
+  background: #333;
+}
+
+/* Arrows */
+.carouselArrows {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  transform: none;
+  display: flex;
+  gap: 12px;
+  pointer-events: none;
+}
+.arrowButton {
+  pointer-events: all;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: #f7f7f7;
+  border-radius: 50%;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  font-size: 1.2rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Top Categories row */
+
+.categorySection {
+  margin: 48px 0 24px;
+}
+
+.categoryHeading {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.categoriesRow {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+/* wrapper to contain arrows & the scroll container */
+.categoryCarouselWrapper {
+  position: relative;
+  padding: 0 30px;
+}
+
+/* the horizontal scroller */
+.categoryCarousel {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  padding: 0 48px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.categoryCarousel::-webkit-scrollbar {
+  display: none;
+}
+
+/* each card */
+.categoryCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+.categoryImageWrapper {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: #f2f2f2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  margin-bottom: 12px;
+  transition: transform 0.2s, background 0.2s;
+}
+.categoryCard:hover .categoryImageWrapper {
+  transform: scale(1.05);
+  background: #e0e0e0;
+}
+
+.categoryImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.categoryLabel {
+  font-size: 1rem;
+  font-weight: 500;
+  position: relative;
+  padding-bottom: 8px;
+}
+
+/* arrows */
+.carouselArrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid #ccc;
+  color: #333;
+  font-size: 1.2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+}
+.carouselArrow:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+.carouselArrowLeft {
+  left: 8px;
+}
+.carouselArrowRight {
+  right: 8px;
+}
+
+.categories {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 48px;
+  align-items: center;
+}
+.categoryCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+
+.active .categoryLabel::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 40px;
+  height: 4px;
+  background: #000;
+  transform: translateX(-50%);
+  border-radius: 2px;
+}
+
+/* Cards grid */
+.cards {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.card {
+  width: 180px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.cardImage {
+  background-color: #f3f3f3;
+  height: 180px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.cardTitle {
+  margin: 4px 0;
+}
+
+.cardPrice {
+  margin: 4px 0;
+  font-weight: bold;
+}
+
+/* Countdown */
+.countdown {
+  display: flex;
+  gap: 12px;
+  background: #fff;
+  padding: 10px 16px;
+  border-radius: 24px;
+  margin: -24px 0 16px; /* overlap image bottom */
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+}
+.timeSegment {
+  text-align: center;
+}
+.timeSegment span {
+  font-weight: bold;
+  display: block;
+}
+.timeSegment small {
+  font-size: 0.7rem;
+  color: #666;
+}
+
+/* Wrap search + filters */
+.search {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Existing searchInput, wallet rules… */
+
+.filters {
+  display: flex;
+  gap: 12px;
+}
+
+.filterSelect {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  background-color: #fff;
+  font-size: 0.9rem;
+  appearance: none;
+  cursor: pointer;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* … your existing styles … */
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+.modal {
+  background: white;
+  padding: 24px;
+  border-radius: 8px;
+  width: 320px;
+  max-width: 90%;
+  box-sizing: border-box;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+}
+.modal h2 {
+  margin-top: 0;
+}
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  margin: 12px 0;
+}
+.formGroup label {
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+.formGroup input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+.btn {
+  padding: 8px 16px;
+  border: none;
+  background: #007bff;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.btn.outlined {
+  background: transparent;
+  border: 1px solid #ccc;
+  color: #333;
+}
+.successMsg {
+  color: green;
+  margin-top: 8px;
+}
+.errorMsg {
+  color: red;
+  margin-top: 8px;
+}
+
+.modalDescription {
+  font-size: 14px;
+  margin: 10px 0 20px;
+  color: #555;
+}
+
+/* ─── Add this at the bottom of ExplorePage.module.css ───────────────── */
+
+.greeting {
+  background-color: #eef6fc;      /* light, neutral-blue background */
+  padding: 8px 16px;              /* space around “Hi, Name” */
+  border-radius: 20px;            /* pill-shaped container */
+  font-weight: 600;
+  color: #1a202c;                 /* dark text for contrast */
+  display: inline-block;          /* shrink to fit content */
+}
+
+.username {
+  margin-left: 4px;               /* small gap after “Hi,” */
+  color: #1a202c;
+}
+
+.section,
+.carouselWrapper,
+.categorySection,
+.listingWrapper {
+  opacity: 0;
+  animation: fadeInUp 0.6s ease-out forwards;
+  animation-delay: 0.2s; /* you can stagger via inline style or nth-child */
+}
+

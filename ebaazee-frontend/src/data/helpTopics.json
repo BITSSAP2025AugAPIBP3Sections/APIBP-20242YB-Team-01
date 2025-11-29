@@ -1,0 +1,33 @@
+[
+    {
+      "title": "How to place a bid",
+      "icon": "FaQuestionCircle",
+      "content": "To place a bid, go to the item page, click “Place Bid,” enter your offer, and confirm. You’ll see your bid on the auction timer until it closes."
+    },
+    {
+      "title": "Managing your account",
+      "icon": "FaUserCircle",
+      "content": "In the Profile section you can update your personal info, change your password, set notification preferences, and connect social accounts."
+    },
+    {
+      "title": "Payment methods",
+      "icon": "FaCreditCard",
+      "content": "We accept Visa, MasterCard, Amex, PayPal, and direct bank transfer. You can add or remove payment methods under Settings → Payment."
+    },
+    {
+      "title": "Contact support",
+      "icon": "FaEnvelope",
+      "content": "Need help? Fill out our Contact form or email support@example.com. Our team replies within 24 hours on business days."
+    },
+    {
+      "title": "FAQ",
+      "icon": "FaRegFileAlt",
+      "content": "Browse frequently asked questions on bidding, shipping, payments, and account management right here."
+    },
+    {
+      "title": "Terms & Conditions",
+      "icon": "FaFileContract",
+      "content": "Our Terms & Conditions cover usage rules, privacy, and your rights. Please read them carefully before placing bids."
+    }
+  ]
+  
