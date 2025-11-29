@@ -84,106 +84,106 @@ export default function SellerPage() {
   };
 
   return (
-      <div className={styles.root}>
-        <div className={styles.card}>
-          <h1 className={styles.heading}>Create New Auction Listing</h1>
-          <form className={styles.form} onSubmit={handleSubmit}>
+    <div className={styles.root}>
+      <div className={styles.card}>
+        <h1 className={styles.heading}>Create New Auction Listing</h1>
+        <form className={styles.form} onSubmit={handleSubmit}>
 
-            {/* Title */}
+          {/* Title */}
+          <div className={styles.field}>
+            <label htmlFor="title">Title</label>
+            <input
+              id="title"
+              name="title"
+              type="text"
+              value={form.title}
+              onChange={handleChange}
+              placeholder="e.g. Vintage Lamp"
+              required
+            />
+          </div>
+
+          {/* Description */}
+          <div className={styles.field}>
+            <label htmlFor="description">Description</label>
+            <textarea
+              id="description"
+              name="description"
+              rows="4"
+              value={form.description}
+              onChange={handleChange}
+              placeholder="Write a brief description of your item..."
+              required
+            />
+          </div>
+
+          {/* Category */}
+          <div className={styles.field}>
+            <label htmlFor="category">Category</label>
+            <select
+              id="category"
+              name="category"
+              value={form.category}
+              onChange={handleChange}
+              required
+            >
+              <option value="">— Select a category —</option>
+              {categories.map(cat => (
+                <option key={cat.id} value={cat.name}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* End Time */}
+          <div className={styles.field}>
+            <label htmlFor="endTime">End Time</label>
+            <input
+              id="endTime"
+              name="endTime"
+              type="datetime-local"
+              value={form.endTime}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          {/* Bid range */}
+          <div className={styles.fieldGroup}>
             <div className={styles.field}>
-              <label htmlFor="title">Title</label>
+              <label htmlFor="minBid">Minimum Bid ($)</label>
               <input
-                  id="title"
-                  name="title"
-                  type="text"
-                  value={form.title}
-                  onChange={handleChange}
-                  placeholder="e.g. Vintage Lamp"
-                  required
+                id="minBid"
+                name="minBid"
+                type="number"
+                min="0"
+                step="0.01"
+                value={form.minBid}
+                onChange={handleChange}
+                required
               />
             </div>
-
-            {/* Description */}
             <div className={styles.field}>
-              <label htmlFor="description">Description</label>
-              <textarea
-                  id="description"
-                  name="description"
-                  rows="4"
-                  value={form.description}
-                  onChange={handleChange}
-                  placeholder="Write a brief description of your item..."
-                  required
-              />
-            </div>
-
-            {/* Category */}
-            <div className={styles.field}>
-              <label htmlFor="category">Category</label>
-              <select
-                  id="category"
-                  name="category"
-                  value={form.category}
-                  onChange={handleChange}
-                  required
-              >
-                <option value="">— Select a category —</option>
-                {categories.map(cat => (
-                    <option key={cat} value={cat}>
-                      {cat}
-                    </option>
-                ))}
-              </select>
-            </div>
-
-            {/* End Time */}
-            <div className={styles.field}>
-              <label htmlFor="endTime">End Time</label>
+              <label htmlFor="maxBid">Maximum Bid ($)</label>
               <input
-                  id="endTime"
-                  name="endTime"
-                  type="datetime-local"
-                  value={form.endTime}
-                  onChange={handleChange}
-                  required
+                id="maxBid"
+                name="maxBid"
+                type="number"
+                min="0"
+                step="0.01"
+                value={form.maxBid}
+                onChange={handleChange}
+                required
               />
             </div>
+          </div>
 
-            {/* Bid range */}
-            <div className={styles.fieldGroup}>
-              <div className={styles.field}>
-                <label htmlFor="minBid">Minimum Bid ($)</label>
-                <input
-                    id="minBid"
-                    name="minBid"
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    value={form.minBid}
-                    onChange={handleChange}
-                    required
-                />
-              </div>
-              <div className={styles.field}>
-                <label htmlFor="maxBid">Maximum Bid ($)</label>
-                <input
-                    id="maxBid"
-                    name="maxBid"
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    value={form.maxBid}
-                    onChange={handleChange}
-                    required
-                />
-              </div>
-            </div>
-
-            <button type="submit" className={styles.submitButton}>
-              Create Listing
-            </button>
-          </form>
-        </div>
+          <button type="submit" className={styles.submitButton}>
+            Create Listing
+          </button>
+        </form>
       </div>
+    </div>
   );
 }
