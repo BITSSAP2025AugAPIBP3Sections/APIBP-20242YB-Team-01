@@ -43,6 +43,18 @@ docker compose down
 
 ---
 
+## System Diagram
+
+![alt text](system_diagram.png)
+
+---
+
+## Container Diagram
+
+![alt text](container_diagram.png)
+
+---
+
 ## Features
 
 - User authentication & JWT security
