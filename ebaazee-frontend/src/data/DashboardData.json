@@ -1,0 +1,74 @@
+{
+    "user": {
+      "subtitle": "You have completed 10 auctions in last month. Start your auction today."
+    },
+    "stats": [
+      {
+        "key": "attended",
+        "label": "Auctions Attended",
+        "value": 280,
+        "color": "#6a1b9a"
+      },
+      {
+        "key": "won",
+        "label": "Auctions Won",
+        "value": 50,
+        "color": "#388e3c"
+      },
+      {
+        "key": "cancelled",
+        "label": "Auctions Cancelled",
+        "value": 25,
+        "color": "#d32f2f"
+      }
+    ],
+    "bids": [
+      {
+        "id": "12584885455",
+        "product": "Porcelain",
+        "amount": 1800,
+        "status": "Winning",
+        "date": "June 25, 2024"
+      },
+      {
+        "id": "12584885482",
+        "product": "Old Clocks",
+        "amount": 1900,
+        "status": "Winning",
+        "date": "June 13, 2024"
+      },
+      {
+        "id": "12584885536",
+        "product": "Manuscripts",
+        "amount": 2000,
+        "status": "Cancelled",
+        "date": "June  2, 2024"
+      },
+      {
+        "id": "12584885548",
+        "product": "Renaissance Art",
+        "amount": 2100,
+        "status": "Winning",
+        "date": "June  8, 2024"
+      },
+      {
+        "id": "12584885563",
+        "product": "Impressionism Art",
+        "amount": 2200,
+        "status": "Winning",
+        "date": "June 21, 2024"
+      },
+      {
+        "id": "12584885589",
+        "product": "Romanticism Art",
+        "amount": 2300,
+        "status": "Cancelled",
+        "date": "June  9, 2024"
+      }
+    ],
+    "pagination": {
+      "current": 1,
+      "total": 3
+    }
+  }
+  

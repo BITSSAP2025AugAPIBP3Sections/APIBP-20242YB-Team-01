@@ -1,0 +1,48 @@
+{
+    "listings": [
+      {
+        "id": 1,
+        "title": "Zenith Auto Elevating Driving Your Experience.",
+        "currentBid": 2898,
+        "status": "Active",
+        "image": ""
+      },
+      {
+        "id": 2,
+        "title": "Heritage Had Curating Watch Time Treasures.",
+        "currentBid": 8974,
+        "status": "Active",
+        "image": ""
+      },
+      {
+        "id": 3,
+        "title": "Nomism Nexus Connecting Collectors to Coins.",
+        "currentBid": 4648,
+        "status": "Active",
+        "lotNumber": 25896742,
+        "image": ""
+      },
+      {
+        "id": 4,
+        "title": "Vintage Valor Embracing the Elegance of Eras Past.",
+        "currentBid": 5200,
+        "status": "Frozen",
+        "image": ""
+      },
+      {
+        "id": 5,
+        "title": "Titan Motors Built to Conquer Every Mile.",
+        "currentBid": 6100,
+        "status": "Frozen",
+        "image": ""
+      },
+      {
+        "id": 6,
+        "title": "Canvas & Culture Brush with Elegance Auction.",
+        "currentBid": 7500,
+        "status": "Frozen",
+        "image": ""
+      }
+    ]
+  }
+  

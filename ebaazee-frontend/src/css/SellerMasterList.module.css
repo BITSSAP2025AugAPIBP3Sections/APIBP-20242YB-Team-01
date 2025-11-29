@@ -1,0 +1,41 @@
+.sidebar {
+  width: 200px;
+  background: #f4f4f4;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  box-sizing: border-box;
+  height: 100vh;
+}
+.logo {
+  width: 80%;
+  max-height: 10rem;
+  object-fit: contain;
+}
+.nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.link {
+  text-decoration: none;
+  color: #333;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+}
+.activeLink {
+  background: #007bff;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+}
+.logout {
+  margin-top: auto;
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}

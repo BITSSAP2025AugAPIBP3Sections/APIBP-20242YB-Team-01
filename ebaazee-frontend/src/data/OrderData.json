@@ -1,0 +1,10 @@
+{
+  "orderId": "ORD-20250517-0543",
+  "items": [
+    { "id": 1, "name": "Vintage Art Piece", "price": 1200 },
+    { "id": 2, "name": "Antique Vase", "price": 650 },
+    { "id": 3, "name": "Rare Coin", "price": 450 }
+  ],
+  "shipping": 25,
+  "taxRate": 0.08
+}
