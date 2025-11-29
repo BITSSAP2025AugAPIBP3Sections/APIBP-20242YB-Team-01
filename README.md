@@ -107,6 +107,9 @@ All API endpoint tables, request/response examples, and details are now maintain
 
 - **See [`docs/ARCHITECTURE_AND_SYSTEM.md`](docs/ARCHITECTURE_AND_SYSTEM.md) for the complete, up-to-date list of all service endpoints, request/response schemas, and usage examples.**
 
+### Tech Stack
+
+| Service | Language/Framework | Database | Key Dependencies |
 |---------|-------------------|----------|------------------|
 | **User Service** | Java 21, Spring Boot 3.5 | PostgreSQL 15, Redis 7 | Spring Security, JWT (io.jsonwebtoken), Spring Data JPA, Lombok |
 | **Auction Service** | Java 21, Spring Boot 3.5 | PostgreSQL 15 | Spring Data JPA, Spring Scheduling, RabbitMQ, Lombok, Validation API |
