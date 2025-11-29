@@ -86,6 +86,52 @@ public class BidService {
     }
 
     /**
+     * Get bidding summary for a specific bidder with product details and status
+     */
+    public List<com.core.auction_system.dto.BiddingSummaryDTO> getBiddingSummaryByBidder(Integer bidderId) {
+        List<Bid> bids = bidRepository.findByBidderId(bidderId);
+        
+        return bids.stream()
+                .map(bid -> {
+                    com.core.auction_system.dto.BiddingSummaryDTO dto = new com.core.auction_system.dto.BiddingSummaryDTO();
+                    dto.setId(bid.getId());
+                    dto.setProductId(bid.getProduct() != null ? bid.getProduct().getId() : null);
+                    dto.setProductName(bid.getProduct() != null ? bid.getProduct().getName() : "Unknown");
+                    dto.setAmount(bid.getAmount());
+                    dto.setBidTime(bid.getBidTime());
+                    dto.setEndTime(bid.getProduct() != null ? bid.getProduct().getEndTime() : null);
+                    
+                    // Determine status
+                    String status = "Active";
+                    if (bid.getProduct() != null) {
+                        Product product = bid.getProduct();
+                        boolean isAuctionEnded = product.getFrozen() != null && product.getFrozen();
+                        
+                        if (isAuctionEnded) {
+                            // Check if this bidder won
+                            if (product.getBuyerId() != null && product.getBuyerId().equals(bidderId)) {
+                                status = "Won";
+                            } else {
+                                status = "Lost";
+                            }
+                        } else {
+                            // Auction still active - check if currently winning
+                            if (product.getCurrentBid() != null && 
+                                bid.getAmount().equals(product.getCurrentBid().intValue())) {
+                                status = "Winning";
+                            } else {
+                                status = "Outbid";
+                            }
+                        }
+                    }
+                    
+                    dto.setStatus(status);
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+
+    /**
      * Place a bid with full business logic including validation, payment reservation, and product update.
      *
      * @param bidDto   Contains amount and productId from user input
@@ -132,6 +178,10 @@ public class BidService {
             }
             if (product.getFrozen() != null && product.getFrozen()) {
                 return BidPlacementResult.error(400, "Auction closed");
+            }
+            // Check if auction has ended (current time is past end time)
+            if (product.getEndTime() != null && LocalDateTime.now().isAfter(product.getEndTime())) {
+                return BidPlacementResult.error(400, "Auction has ended");
             }
             if (product.getCurrentBid() != null && bidDto.getAmount() <= product.getCurrentBid()) {
                 return BidPlacementResult.error(400, "Bid not higher than current");
