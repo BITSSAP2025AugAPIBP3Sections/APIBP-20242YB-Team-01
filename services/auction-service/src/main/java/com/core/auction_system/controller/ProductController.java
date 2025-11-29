@@ -1,3 +1,4 @@
+    // ...existing code...
 package com.core.auction_system.controller;
 
 import com.core.auction_system.dto.ProductCreateDTO;
@@ -26,6 +27,16 @@ public class ProductController {
 
     @Autowired
     private ProductService productService;
+
+    /**
+     * GET /api/products/v1/users/{userId}
+     * Returns all products posted by a particular seller (userId)
+     */
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<List<Product>> getProductsBySeller(@PathVariable Integer userId) {
+        List<Product> products = productService.getProductsBySeller(userId);
+        return ResponseEntity.ok(products);
+    }
 
     /**
      * GET /api/products/v1
