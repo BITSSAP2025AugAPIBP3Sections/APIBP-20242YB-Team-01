@@ -1,0 +1,49 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auction-service
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: auction-service
+  template:
+    metadata:
+      labels:
+        app: auction-service
+    spec:
+      containers:
+        - name: auction-service
+          image: apibp-20242yb-team-01-auction-service:dev
+          ports:
+            - containerPort: 8082
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://auction-db:5432/auction_db
+            - name: SPRING_DATASOURCE_USERNAME
+              value: auction_user
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: auction_pass
+            - name: OPENSEARCH_HOST
+              value: http://opensearch-node1:9200
+            - name: OPENSEARCH_USERNAME
+              value: admin
+            - name: OPENSEARCH_PASSWORD
+              value: quartz_EB_@5911
+            - name: RABBITMQ_URL
+              value: amqp://guest:guest@rabbitmq:5672
+            - name: PAYMENT_CONSUMER_QUEUE
+              value: payment-service-consumer
+          imagePullPolicy: IfNotPresent
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auction-service
+spec:
+  selector:
+    app: auction-service
+  ports:
+    - port: 8082
+      targetPort: 8082
