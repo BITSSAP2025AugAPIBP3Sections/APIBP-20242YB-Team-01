@@ -21,11 +21,11 @@ spec:
             - containerPort: 8080
           env:
             - name: SMTP_USERNAME
-              value: "nuthikatlaabinav@gmail.com"
+              value: "yourExample@gmail.com"
             - name: SMTP_PASSWORD
-              value: "hjbqhywvvoracfme"
+              value: "password"
             - name: SMTP_FROM
-              value: "nuthikatlaabinav@gmail.com"
+              value: "yourExample@gmail.com"
             - name: RABBITMQ_URL
               value: amqp://guest:guest@rabbitmq:5672
             - name: QUEUE_BINDINGS
