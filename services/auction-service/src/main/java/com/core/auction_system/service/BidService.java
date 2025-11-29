@@ -2,12 +2,14 @@ package com.core.auction_system.service;
 
 import com.core.auction_system.client.PaymentClient;
 import com.core.auction_system.dto.BidDTO;
+import com.core.auction_system.dto.BidResponseDTO;
 import com.core.auction_system.model.Bid;
 import com.core.auction_system.model.Product;
 import com.core.auction_system.repository.BidRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +48,10 @@ public class BidService {
         return bidRepository.findByProduct(product);
     }
 
+    public List<Bid> getBidsByProductId(Integer productId) {
+        return bidRepository.findByProductId(productId);
+    }
+
     public boolean hasUserBidOnProduct(Integer bidderId, Product product) {
         return bidRepository.existsByBidderIdAndProduct(bidderId, product);
     }
@@ -60,6 +66,31 @@ public class BidService {
 
     public Double getAverageBidAmount(Product product) {
         return bidRepository.findAverageBidAmountByProduct(product);
+    }
+
+    /**
+     * Convert Bid entity to BidResponseDTO with just product ID
+     */
+    public BidResponseDTO mapToBidResponseDTO(Bid bid) {
+        BidResponseDTO dto = new BidResponseDTO();
+        dto.setId(bid.getId());
+        dto.setAmount(bid.getAmount());
+        dto.setBidTime(bid.getBidTime());
+        dto.setProductId(bid.getProduct() != null ? bid.getProduct().getId() : null);
+        dto.setBidderId(bid.getBidderId());
+        dto.setEmail(bid.getEmail());
+        dto.setReservationId(bid.getReservationId());
+        dto.setStatus(bid.getStatus());
+        return dto;
+    }
+
+    /**
+     * Convert list of Bid entities to list of BidResponseDTOs
+     */
+    public List<BidResponseDTO> mapToBidResponseDTOList(List<Bid> bids) {
+        return bids.stream()
+                .map(this::mapToBidResponseDTO)
+                .collect(Collectors.toList());
     }
 
     /**
