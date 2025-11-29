@@ -21,11 +21,17 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthorizationFilter jwtAuthorizationFilter) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthorizationFilter jwtAuthorizationFilter)
+            throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/products/v1/**", "/api/bids/v1/**", "/api/categories/v1/**").authenticated()
+                        // Allow products to be viewed by authenticated users (BUYER, SELLER, ADMIN)
+                        .requestMatchers("/api/products/v1/**").hasAnyRole("BUYER", "SELLER", "ADMIN")
+                        // Allow bids to be placed by buyers
+                        .requestMatchers("/api/bids/v1/**").hasAnyRole("BUYER", "SELLER", "ADMIN")
+                        // Allow categories to be viewed by authenticated users
+                        .requestMatchers("/api/categories/v1/**").hasAnyRole("BUYER", "SELLER", "ADMIN")
                         // Allow Swagger/OpenAPI endpoints
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                         .anyRequest().permitAll()

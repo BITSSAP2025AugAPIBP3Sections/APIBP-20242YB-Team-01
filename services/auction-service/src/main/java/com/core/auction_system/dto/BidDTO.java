@@ -1,23 +1,25 @@
 package com.core.auction_system.dto;
 
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class BidDTO {
-    private Integer id;
+    // Required fields from user
     private Integer amount;
-    private LocalDateTime bidTime;
     private Integer productId;
+
+    // Optional fields for response/internal use
+    private Integer id;
+    private LocalDateTime bidTime;
     private String productName;
     private boolean isSold;
     private boolean isFrozen;
-    private Integer buyerId;
+    private Integer buyerId;  // Will be extracted from JWT, not from user input
     private LocalDateTime endTime;
     // Lombok will generate constructors, getters, setters
 }

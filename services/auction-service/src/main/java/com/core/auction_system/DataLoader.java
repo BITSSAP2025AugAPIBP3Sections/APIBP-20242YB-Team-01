@@ -6,13 +6,11 @@ import com.core.auction_system.model.Product;
 import com.core.auction_system.repository.BidRepository;
 import com.core.auction_system.repository.CategoryRepository;
 import com.core.auction_system.repository.ProductRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
-
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
 
 @Component
 public class DataLoader implements CommandLineRunner {

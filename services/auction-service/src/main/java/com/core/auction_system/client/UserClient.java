@@ -1,6 +1,11 @@
 package com.core.auction_system.client;
 
 import com.core.auction_system.dto.UserProfile;
+import java.time.Instant;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -8,12 +13,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-
-import java.time.Instant;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Simple client to fetch user profile information from auth-svc.
@@ -45,7 +44,8 @@ public class UserClient {
         log.debug("Cache miss for user id {}, fetching from {}", id, authServiceUrl);
         try {
             String url = authServiceUrl + "/api/auth/users/" + id;
-            ResponseEntity<UserProfile> resp = restTemplate.exchange(url, HttpMethod.GET, HttpEntity.EMPTY, UserProfile.class);
+            ResponseEntity<UserProfile> resp =
+                    restTemplate.exchange(url, HttpMethod.GET, HttpEntity.EMPTY, UserProfile.class);
             UserProfile profile = resp.getBody();
             if (profile != null) {
                 CacheEntry ne = new CacheEntry();
@@ -72,7 +72,8 @@ public class UserClient {
             HttpHeaders headers = new HttpHeaders();
             headers.setBearerAuth(bearerToken.replaceFirst("Bearer\\s+", ""));
             HttpEntity<Void> ent = new HttpEntity<>(headers);
-            String url = authServiceUrl + "/api/auth/me"; // expects auth-svc to support /api/auth/me which returns profile for current token
+            String url = authServiceUrl +
+                    "/api/auth/me"; // expects auth-svc to support /api/auth/me which returns profile for current token
             log.debug("Fetching user profile from token using {}", url);
             ResponseEntity<UserProfile> resp = restTemplate.exchange(url, HttpMethod.GET, ent, UserProfile.class);
             log.info("Fetched profile for token user");
