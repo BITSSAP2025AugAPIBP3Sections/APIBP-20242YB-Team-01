@@ -78,6 +78,18 @@ public class BidController {
     }
 
     /**
+     * GET /api/bids/v1/users/{userId}/summary
+     * Get bidding summary for a specific user with product details and status
+     */
+    @GetMapping("/users/{userId}/summary")
+    public ResponseEntity<List<com.core.auction_system.dto.BiddingSummaryDTO>> getBiddingSummary(@PathVariable Integer userId) {
+        logger.debug("GET /api/bids/v1/users/{}/summary called", userId);
+        List<com.core.auction_system.dto.BiddingSummaryDTO> summary = bidService.getBiddingSummaryByBidder(userId);
+        logger.info("Found {} bids in summary for user {}", summary.size(), userId);
+        return ResponseEntity.ok(summary);
+    }
+
+    /**
      * POST /api/bids/v1
      * Accepts only amount and productId from user.
      * BuyerId and email are extracted from JWT token.

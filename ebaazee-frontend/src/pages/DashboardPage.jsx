@@ -6,7 +6,7 @@ import defaultAvatars from '../data/defaultAvatars.json';
 
 export default function DashboardPage() {
   const [firstName, setFirstName] = useState('');
-  const [avatar, setAvatar] = useState(userData.avatarUrl);
+  const [avatar, setAvatar] = useState(null);
   const [bids, setBids] = useState([]);
   const [pagination, setPagination] = useState({ current: 1, total: 1 }); // Placeholder
   const [stats, setStats] = useState([]); // Placeholder
@@ -16,7 +16,7 @@ export default function DashboardPage() {
       const token = localStorage.getItem('token');
       const id = localStorage.getItem('id');
       if (!token) return;
-      fetch(`http://localhost:8080/api/auth/v1/user/${id}`, {
+      fetch(`http://localhost:8080/api/auth/v1/users/${id}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -32,34 +32,40 @@ export default function DashboardPage() {
     }, []);
   
   useEffect(() => {
-    const isPlaceholder = avatar === userData.avatarUrl;
-    if (isPlaceholder) {
+    if (!avatar) {
       const randomIndex = Math.floor(Math.random() * defaultAvatars.length);
       setAvatar(defaultAvatars[randomIndex]);
     }
-  }, []);
+  }, [avatar]);
 
   useEffect(() => {
-    fetch('http://localhost:8080/api/bids/v1', {
-      credentials: 'include', // Important if using Spring Security + cookies
+    const userId = localStorage.getItem('id');
+    const token = localStorage.getItem('token');
+    
+    if (!userId || !token) {
+      console.error('User ID or token not found');
+      return;
+    }
+
+    fetch(`http://localhost:8080/api/bids/v1/users/${userId}/summary`, {
+      credentials: 'include',
       method: 'GET',
-              headers: {
-                'Accept': 'application/json',
-                // Add Authorization header here if your API requires auth
-                'Authorization': 'Bearer ' + localStorage.getItem('token')
-              }
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
     })
       .then(res => {
-        if (!res.ok) throw new Error('Failed to fetch bids');
+        if (!res.ok) throw new Error('Failed to fetch bidding summary');
         return res.json();
       })
       .then(data => {
         setBids(data);
-        console.log(data);
+        console.log('Bidding summary:', data);
         // Optionally calculate stats or pagination
       })
       .catch(err => {
-        console.error('Error fetching bids:', err);
+        console.error('Error fetching bidding summary:', err);
       });
   }, []);
 
@@ -67,7 +73,7 @@ export default function DashboardPage() {
     <div className={styles.root}>
       {/* Greeting */}
       <header className={styles.header}>
-        <img src={avatar} alt="Avatar" className={styles.avatar} />
+        {avatar && <img src={avatar} alt="Avatar" className={styles.avatar} />}
         <div>
           <h1 className={styles.greeting}>Hi, {firstName}</h1>
           <p className={styles.subtitle}>
@@ -147,7 +153,7 @@ export default function DashboardPage() {
                    )}
                  </td>
                  <td>
-                   {row.bidTime && (
+                   {row.endTime && (
                      <>
                        <div>{row.endTime.split('T')[1].split('.')[0]}</div> {/* Time */}
                      </>
