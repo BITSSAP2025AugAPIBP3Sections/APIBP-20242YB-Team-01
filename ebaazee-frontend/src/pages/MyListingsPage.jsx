@@ -11,16 +11,30 @@ export default function MyListingsPage() {
 
     // Fetch listings
     useEffect(() => {
-        axios.get('http://localhost:9090/api/seller/my-listings', {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem("token")}`
-            }
-        })
-            .then(response => {
+        const fetchListings = async () => {
+            try {
+                const token = localStorage.getItem("token");
+                const userId = localStorage.getItem("id"); // Get seller's user ID from localStorage
+                
+                if (!userId) {
+                    console.error("User ID not found in localStorage");
+                    return;
+                }
+
+                const response = await axios.get(`http://localhost:8080/api/products/v1/users/${userId}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
                 setListings(response.data);
                 setFilteredListings(response.data);
-            })
-            .catch(error => console.error("Error fetching listings:", error));
+            } catch (error) {
+                console.error("Error fetching listings:", error);
+            }
+        };
+
+        fetchListings();
     }, []);
 
     // Fetch categories
@@ -28,12 +42,15 @@ export default function MyListingsPage() {
         const fetchCategories = async () => {
             try {
                 const token = localStorage.getItem("token");
-                const response = await axios.get("http://localhost:9090/api/categories", {
+                const response = await axios.get("http://localhost:8080/api/categories/v1", {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 });
-                setCategories(response.data);
+                
+                // Extract category names from the response
+                const categoryNames = response.data.map(cat => cat.name || cat);
+                setCategories(categoryNames);
             } catch (error) {
                 console.error("Error fetching categories:", error);
             }
@@ -99,30 +116,52 @@ export default function MyListingsPage() {
             </div>
 
             <div className={styles.cardContainer}>
-                {filteredListings.map((listing) => (
-                    <div key={listing.id} className={styles.card}>
-                        <h2 className={styles.productTitle}>{listing.name}</h2>
-                        <p className={styles.description}>{listing.description}</p>
-                        <p className={styles.status}>
-                            Status: <strong>{listing.status}</strong>
-                        </p>
-                        <p className={styles.category}>
-                            Category: <strong>{listing.category}</strong>
-                        </p>
-                        {listing.status === "SOLD" && (
-                            <>
-                                <p><strong>Sold To:</strong> {listing.buyer}</p>
-                                <p><strong>Sold Price:</strong> ₹{listing.price}</p>
-                            </>
-                        )}
-                        {listing.status === "ACTIVE" && listing.currentBid && (
-                            <>
-                                <p><strong>Highest Bid:</strong> ₹{listing.currentBid}</p>
-                                <p><strong>Top Bidder:</strong> {listing.topBidder}</p>
-                            </>
-                        )}
+                {filteredListings.length === 0 ? (
+                    <div className={styles.emptyState}>
+                        <p>No listings found. Create your first listing!</p>
                     </div>
-                ))}
+                ) : (
+                    filteredListings.map((listing) => {
+                        // Determine status based on frozen and sold flags
+                        let status = 'ACTIVE';
+                        if (listing.sold) {
+                            status = 'SOLD';
+                        } else if (listing.frozen) {
+                            status = 'FROZEN';
+                        }
+
+                        return (
+                            <div key={listing.id} className={styles.card}>
+                                <h2 className={styles.productTitle}>{listing.name}</h2>
+                                <p className={styles.description}>{listing.description || 'No description available'}</p>
+                                <p className={styles.status}>
+                                    Status: <strong>{status}</strong>
+                                </p>
+                                <p className={styles.category}>
+                                    Category: <strong>{listing.category}</strong>
+                                </p>
+                                <p className={styles.bidRange}>
+                                    Bid Range: <strong>${listing.minBid} - ${listing.maxBid}</strong>
+                                </p>
+                                {listing.currentBid > 0 && (
+                                    <p className={styles.currentBid}>
+                                        Current Bid: <strong>${listing.currentBid}</strong>
+                                    </p>
+                                )}
+                                {listing.endTime && (
+                                    <p className={styles.endTime}>
+                                        End Time: <strong>{new Date(listing.endTime).toLocaleString()}</strong>
+                                    </p>
+                                )}
+                                {listing.sold && listing.buyerId && (
+                                    <p className={styles.buyerInfo}>
+                                        <strong>Sold to Buyer ID:</strong> {listing.buyerId}
+                                    </p>
+                                )}
+                            </div>
+                        );
+                    })
+                )}
             </div>
         </div>
     );
