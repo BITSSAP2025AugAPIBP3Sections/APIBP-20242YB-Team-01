@@ -71,8 +71,29 @@ docker compose down
 For detailed architecture, API docs, troubleshooting, Kubernetes setup, and contribution guidelines, see:
 
 - [docs/PROJECT_OVERVIEW.md](docs/PROJECT_OVERVIEW.md)
+- [docs/DOCKER_HUB_DEPLOYMENT.md](docs/DOCKER_HUB_DEPLOYMENT.md) - **Docker Hub & Kubernetes Deployment Guide**
+- [docs/INFRASTRUCTURE_SERVICES.md](docs/INFRASTRUCTURE_SERVICES.md) - **Database, RabbitMQ, Envoy Setup**
+- [docs/ARCHITECTURE_AND_SYSTEM.md](docs/ARCHITECTURE_AND_SYSTEM.md) - Architecture and System Design
 - Service-specific docs in `services/*/INFO.MD`
-- API Gateway config in `gateway/api-gateway/API-GATEWAY.MD`
+
+---
+
+## Docker Hub Deployment
+
+Push all microservices to Docker Hub and deploy to Kubernetes:
+
+```bash
+# 1. Build and push all images to Docker Hub
+./docker-push.sh
+
+# 2. Update Kubernetes manifests with your Docker Hub images
+./update-k8s-images.sh
+
+# 3. Deploy to Kubernetes
+kubectl apply -f k8s/
+```
+
+📖 **See [docs/DOCKER_HUB_DEPLOYMENT.md](docs/DOCKER_HUB_DEPLOYMENT.md) for complete deployment instructions**
 
 ---
 

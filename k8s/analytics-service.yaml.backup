@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: analytics-service
-          image: abhinavabhi793/ebaazee-analytics-service:latest
+          image: apibp-20242yb-team-01-analytics-service:dev
           ports:
             - containerPort: 8085
           env:

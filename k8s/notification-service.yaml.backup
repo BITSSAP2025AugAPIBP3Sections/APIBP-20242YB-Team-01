@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: notification-service
-          image: abhinavabhi793/ebaazee-notification-service:latest
+          image: apibp-20242yb-team-01-notification-service:dev
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080

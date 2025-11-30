@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: user-service
-          image: apibp-20242yb-team-01-user-service:dev
+          image: abhinavabhi793/ebaazee-user-service:latest
           ports:
             - containerPort: 8081
           env:

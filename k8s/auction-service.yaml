@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: auction-service
-          image: apibp-20242yb-team-01-auction-service:dev
+          image: abhinavabhi793/ebaazee-auction-service:latest
           ports:
             - containerPort: 8082
           env:
