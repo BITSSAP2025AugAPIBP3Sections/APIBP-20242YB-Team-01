@@ -13,6 +13,6 @@ We as members, contributors, and leaders pledge to make participation in our com
 
 ## Enforcement
 
-Instances of abusive, harassing, or otherwise unacceptable behavior may be reported by contacting the project team at [maintainer-email@example.com]. All complaints will be reviewed and investigated and will result in a response that is deemed necessary and appropriate to the circumstances.
+Instances of abusive, harassing, or otherwise unacceptable behavior may be reported by contacting the project team at [2024sl93050@wilp.bits-pilani.ac.in, 2024sl93025@wilp.bits-pilani.ac.in, 2024sl93005@wilp.bits-pilani.ac.in, 2024sl93041@wilp.bits-pilani.ac.in, 2024sl93110@wilp.bits-pilani.ac.in]. All complaints will be reviewed and investigated and will result in a response that is deemed necessary and appropriate to the circumstances.
 
 For more details, see [Contributor Covenant](https://www.contributor-covenant.org/version/2/1/code_of_conduct/).
